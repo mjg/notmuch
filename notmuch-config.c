@@ -132,6 +132,8 @@ struct _notmuch_config {
     size_t user_other_email_length;
     const char **new_tags;
     size_t new_tags_length;
+    const char **rename_tags;
+    size_t rename_tags_length;
     const char **new_ignore;
     size_t new_ignore_length;
     bool maildir_synchronize_flags;
@@ -713,6 +715,14 @@ notmuch_config_get_new_tags (notmuch_config_t *config,   size_t *length)
 }
 
 const char **
+notmuch_config_get_rename_tags (notmuch_config_t *config,   size_t *length)
+{
+    return _config_get_list (config, "new", "rename_tags",
+			     &(config->rename_tags),
+			     &(config->rename_tags_length), length);
+}
+
+const char **
 notmuch_config_get_new_ignore (notmuch_config_t *config, size_t *length)
 {
     return _config_get_list (config, "new", "ignore",
@@ -736,6 +746,15 @@ notmuch_config_set_new_tags (notmuch_config_t *config,
 {
     _config_set_list (config, "new", "tags", list, length,
 		     &(config->new_tags));
+}
+
+void
+notmuch_config_set_rename_tags (notmuch_config_t *config,
+				     const char *list[],
+				     size_t length)
+{
+    _config_set_list (config, "new", "rename_tags", list, length,
+		     &(config->rename_tags));
 }
 
 void
@@ -865,6 +884,13 @@ notmuch_config_command_get (notmuch_config_t *config, char *item)
 	size_t i, length;
 
 	tags = notmuch_config_get_new_tags (config, &length);
+	for (i = 0; i < length; i++)
+	    printf ("%s\n", tags[i]);
+    } else if (strcmp(item, "new.rename_tags") == 0) {
+	const char **tags;
+	size_t i, length;
+
+	tags = notmuch_config_get_rename_tags (config, &length);
 	for (i = 0; i < length; i++)
 	    printf ("%s\n", tags[i]);
     } else if (STRNCMP_LITERAL (item, BUILT_WITH_PREFIX) == 0) {

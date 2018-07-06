@@ -317,6 +317,14 @@ notmuch_config_set_new_tags (notmuch_config_t *config,
 			     size_t length);
 
 const char **
+notmuch_config_get_rename_tags (notmuch_config_t *config,
+			     size_t *length);
+void
+notmuch_config_set_rename_tags (notmuch_config_t *config,
+			     const char *rename_tags[],
+			     size_t length);
+
+const char **
 notmuch_config_get_new_ignore (notmuch_config_t *config,
 			       size_t *length);
 

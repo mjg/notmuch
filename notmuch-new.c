@@ -50,6 +50,8 @@ typedef struct {
     bool full_scan;
     const char **new_tags;
     size_t new_tags_length;
+    const char **rename_tags;
+    size_t rename_tags_length;
     const char **ignore_verbatim;
     size_t ignore_verbatim_length;
     regex_t *ignore_regex;
@@ -399,6 +401,13 @@ add_file (notmuch_database_t *notmuch, const char *filename,
 	break;
     /* Non-fatal issues (go on to next file). */
     case NOTMUCH_STATUS_DUPLICATE_MESSAGE_ID:
+	notmuch_message_freeze (message);
+
+	for (tag = state->rename_tags; tag != NULL && *tag != NULL; tag++) {
+	    notmuch_message_add_tag (message, *tag);
+	}
+
+	notmuch_message_thaw (message);
 	if (state->synchronize_flags)
 	    notmuch_message_maildir_flags_to_tags (message);
 	break;
@@ -948,7 +957,15 @@ remove_filename (notmuch_database_t *notmuch,
 
     status = notmuch_database_remove_message (notmuch, path);
     if (status == NOTMUCH_STATUS_DUPLICATE_MESSAGE_ID) {
+        const char **tag;
 	add_files_state->renamed_messages++;
+	notmuch_message_freeze (message);
+
+	for (tag = add_files_state->rename_tags; tag != NULL && *tag != NULL; tag++) {
+	    notmuch_message_add_tag (message, *tag);
+	}
+
+	notmuch_message_thaw (message);
 	if (add_files_state->synchronize_flags == true)
 	    notmuch_message_maildir_flags_to_tags (message);
 	status = NOTMUCH_STATUS_SUCCESS;
@@ -1095,6 +1112,7 @@ notmuch_new_command (notmuch_config_t *config, int argc, char *argv[])
 	add_files_state.verbosity = VERBOSITY_VERBOSE;
 
     add_files_state.new_tags = notmuch_config_get_new_tags (config, &add_files_state.new_tags_length);
+    add_files_state.rename_tags = notmuch_config_get_rename_tags (config, &add_files_state.rename_tags_length);
     add_files_state.synchronize_flags = notmuch_config_get_maildir_synchronize_flags (config);
     db_path = notmuch_config_get_database_path (config);
     add_files_state.db_path = db_path;
@@ -1109,6 +1127,17 @@ notmuch_new_command (notmuch_config_t *config, int argc, char *argv[])
 	if (error_msg) {
 	    fprintf (stderr, "Error: tag '%s' in new.tags: %s\n",
 		     add_files_state.new_tags[i], error_msg);
+	    return EXIT_FAILURE;
+	}
+    }
+
+    for (i = 0; i < add_files_state.rename_tags_length; i++) {
+	const char *error_msg;
+
+	error_msg = illegal_tag (add_files_state.rename_tags[i], false);
+	if (error_msg) {
+	    fprintf (stderr, "Error: tag '%s' in rename.tags: %s\n",
+		     add_files_state.rename_tags[i], error_msg);
 	    return EXIT_FAILURE;
 	}
     }

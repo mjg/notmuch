@@ -196,6 +196,36 @@ notmuch search 'subject:"File in new"' | notmuch_search_sanitize > output
 test_expect_equal "$(< output)" \
 "thread:XXX   2001-01-05 [1/1] Notmuch Test Suite; File in new/ (test unread)"
 
+test_begin_subtest "Renamed files get default renamed tags"
+OLDCONFIG=$(notmuch config get new.rename_tags)
+notmuch config set new.rename_tags "renamed"
+mv $MAIL_DIR/new/file-in-new $MAIL_DIR/new/file-in-new-renamed
+notmuch new
+notmuch config set new.rename_tags $OLDCONFIG
+notmuch search 'subject:"File in new"' | notmuch_search_sanitize > output
+test_expect_equal "$(< output)" \
+"thread:XXX   2001-01-05 [1/1] Notmuch Test Suite; File in new/ (renamed test unread)"
+
+test_begin_subtest "Copied files do get new default renamed tags"
+OLDCONFIG=$(notmuch config get new.rename_tags)
+notmuch config set new.rename_tags "copied"
+cp $MAIL_DIR/new/file-in-new-renamed $MAIL_DIR/new/file-in-new-copied
+notmuch new
+notmuch config set new.rename_tags $OLDCONFIG
+notmuch search 'subject:"File in new"' | notmuch_search_sanitize > output
+test_expect_equal "$(< output)" \
+"thread:XXX   2001-01-05 [1/1(2)] Notmuch Test Suite; File in new/ (copied renamed test unread)"
+
+test_begin_subtest "Renamed files (cp+rm) get default renamed tags"
+OLDCONFIG=$(notmuch config get new.rename_tags)
+notmuch config set new.rename_tags "cprm"
+rm $MAIL_DIR/new/file-in-new-renamed
+notmuch new
+notmuch config set new.rename_tags $OLDCONFIG
+notmuch search 'subject:"File in new"' | notmuch_search_sanitize > output
+test_expect_equal "$(< output)" \
+"thread:XXX   2001-01-05 [1/1] Notmuch Test Suite; File in new/ (copied cprm renamed test unread)"
+
 for tag in draft flagged passed replied; do
     test_begin_subtest "$tag is valid in new.tags"
     OLDCONFIG=$(notmuch config get new.tags)

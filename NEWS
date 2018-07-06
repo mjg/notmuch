@@ -1,3 +1,14 @@
+Notmuch 0.28 (UNRELEASED)
+=========================
+
+New command-line features
+-------------------------
+
+User-configurable tags for renamed messages
+
+  A new "new.rename_tags" option is available in the configuration file to
+  determine which tags are applied to renamed (moved) messages.
+
 Notmuch 0.27 (2018-06-13)
 =========================
 

@@ -77,6 +77,12 @@ The available configuration items are described below.
 
     Default: ``unread;inbox``.
 
+**new.rename_tags**
+    A list of tags that will be added to all messages which
+    **notmuch new** identifies as renamed (moved).
+
+    Default: not set.
+
 **new.ignore**
     A list to specify files and directories that will not be searched
     for messages by **notmuch new**. Each entry in the list is either:
