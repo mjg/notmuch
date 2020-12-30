@@ -622,6 +622,15 @@ class Database(base.NotmuchObject):
                 omit_excluded=EXCLUDE.TRUE,
                 sort=SORT.UNSORTED,  # Check this default
                 exclude_tags=None):
+        """Search the database for threads.
+
+        :returns: An iterator over the threads found.
+        :rtype: ThreadIter
+
+        :raises OutOfMemoryError: if no memory is available to
+           allocate the query.
+        :raises ObjectDestroyedError: if used after destroyed.
+        """
         query = self._create_query(query,
                                    omit_excluded=omit_excluded,
                                    sort=sort,
@@ -632,6 +641,15 @@ class Database(base.NotmuchObject):
                       omit_excluded=EXCLUDE.TRUE,
                       sort=SORT.UNSORTED,  # Check this default
                       exclude_tags=None):
+        """Search the database for threads and count.
+
+        :returns: The number of threads found.
+        :rtype: int
+
+        :raises OutOfMemoryError: if no memory is available to
+           allocate the query.
+        :raises ObjectDestroyedError: if used after destroyed.
+        """
         query = self._create_query(query,
                                    omit_excluded=omit_excluded,
                                    sort=sort,
