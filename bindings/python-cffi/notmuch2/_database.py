@@ -618,6 +618,23 @@ class Database(base.NotmuchObject):
                                    exclude_tags=exclude_tags)
         return query.count_messages()
 
+    def collect_tags(self, query, *,
+                       omit_excluded=EXCLUDE.TRUE,
+                       sort=SORT.UNSORTED,  # Check this default
+                       exclude_tags=None):
+        """Search the database for messages and collect tags.
+
+        :returns: The tags of all messages found.
+        :rtype: ImmutableTagset
+
+        :raises ObjectDestroyedError: if used after destroyed.
+        """
+        query = self._create_query(query,
+                                   omit_excluded=omit_excluded,
+                                   sort=sort,
+                                   exclude_tags=exclude_tags)
+        return query.collect_tags()
+
     def threads(self,  query, *,
                 omit_excluded=EXCLUDE.TRUE,
                 sort=SORT.UNSORTED,  # Check this default

@@ -2,6 +2,7 @@ from notmuch2 import _base as base
 from notmuch2 import _capi as capi
 from notmuch2 import _errors as errors
 from notmuch2 import _message as message
+from notmuch2 import _tags as tags
 from notmuch2 import _thread as thread
 
 
@@ -16,6 +17,7 @@ class Query(base.NotmuchObject):
     match libnotmuch's memory management.
     """
     _query_p = base.MemoryPointer()
+    _msgs_p = base.MemoryPointer()
 
     def __init__(self, db, query_p):
         self._db = db
@@ -39,6 +41,7 @@ class Query(base.NotmuchObject):
         if self.alive:
             capi.lib.notmuch_query_destroy(self._query_p)
         self._query_p = None
+        self._msgs_p = None
 
     @property
     def query(self):
@@ -65,6 +68,17 @@ class Query(base.NotmuchObject):
         if ret != capi.lib.NOTMUCH_STATUS_SUCCESS:
             raise errors.NotmuchError(ret)
         return count_p[0]
+
+    def collect_tags(self):
+        """Return the tags of messages matching this query."""
+        msgs_pp = capi.ffi.new('notmuch_messages_t**')
+        ret = capi.lib.notmuch_query_search_messages(self._query_p, msgs_pp)
+        if ret != capi.lib.NOTMUCH_STATUS_SUCCESS:
+            raise errors.NotmuchError(ret)
+        self._msgs_p = msgs_pp[0]
+        tagset = tags.ImmutableTagSet(
+            self, '_msgs_p', capi.lib.notmuch_messages_collect_tags)
+        return tags.ImmutableTagSet._from_iterable(tagset)
 
     def threads(self):
         """Return an iterator over all the threads found by the query."""

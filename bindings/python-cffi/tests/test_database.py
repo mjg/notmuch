@@ -340,3 +340,6 @@ class TestQuery:
             assert isinstance(msg, notmuch2.Message)
             assert msg.alive
             del msg
+
+    def test_collect_tags(self, db):
+        assert set(db.collect_tags('*')) == set(db.tags)
