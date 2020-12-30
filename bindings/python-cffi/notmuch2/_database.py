@@ -605,10 +605,10 @@ class Database(base.NotmuchObject):
                        omit_excluded=EXCLUDE.TRUE,
                        sort=SORT.UNSORTED,  # Check this default
                        exclude_tags=None):
-        """Search the database for messages.
+        """Search the database for messages and count.
 
-        :returns: An iterator over the messages found.
-        :rtype: MessageIter
+        :returns: The number of messages found.
+        :rtype: int
 
         :raises ObjectDestroyedError: if used after destroyed.
         """
