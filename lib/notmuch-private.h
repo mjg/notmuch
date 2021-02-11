@@ -31,6 +31,8 @@
 
 #include "notmuch.h"
 
+#include "gmime-extra.h"
+
 NOTMUCH_BEGIN_DECLS
 
 #include <stdlib.h>
@@ -46,8 +48,6 @@ NOTMUCH_BEGIN_DECLS
 #include <assert.h>
 
 #include <talloc.h>
-
-#include "gmime-extra.h"
 
 #include "xutil.h"
 #include "error_util.h"
