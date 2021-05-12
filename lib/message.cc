@@ -1758,7 +1758,7 @@ _ensure_maildir_flags (notmuch_message_t *message, bool force)
 	flags = strstr (filename, ":2,");
 	if (flags) {
 	    seen_maildir_info = 1;
-	    flags += 3;
+	    flags += 2;
 	    combined_flags = talloc_strdup_append (combined_flags, flags);
 	} else if (STRNCMP_LITERAL (dir, "new/") == 0) {
 	    /* Messages are delivered to new/ with no "info" part, but
@@ -1768,6 +1768,7 @@ _ensure_maildir_flags (notmuch_message_t *message, bool force)
 	     * flags on messages in new/, so we're liberal in what we
 	     * accept. */
 	    seen_maildir_info = 1;
+	    combined_flags = talloc_strdup_append (combined_flags, ",");
 	}
     }
     if (seen_maildir_info)
