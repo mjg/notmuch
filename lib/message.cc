@@ -1789,12 +1789,25 @@ notmuch_message_has_maildir_flag (notmuch_message_t *message, char flag)
     return ret;
 }
 
+/* Internal function which encapsulates the logic.
+ * Assumes message->maildir_flags != NULL and leaves all
+ * checks and error reporting to the caller.
+ */
+
+static notmuch_bool_t
+_message_has_maildir_flag (notmuch_message_t *message,
+			   unsigned i)
+{
+    return strchr (message->maildir_flags, flag2tag[i].flag) != NULL;
+}
+
 notmuch_status_t
 notmuch_message_has_maildir_flag_st (notmuch_message_t *message,
 				     char flag,
 				     notmuch_bool_t *is_set)
 {
     notmuch_status_t status;
+    unsigned i;
 
     if (! is_set)
 	return NOTMUCH_STATUS_NULL_POINTER;
@@ -1803,7 +1816,15 @@ notmuch_message_has_maildir_flag_st (notmuch_message_t *message,
     if (status)
 	return status;
 
-    *is_set =  message->maildir_flags && (strchr (message->maildir_flags, flag) != NULL);
+    *is_set = message->maildir_flags != NULL;
+    if (!*is_set)
+	return NOTMUCH_STATUS_SUCCESS;
+
+    for (i = 0; i < ARRAY_SIZE (flag2tag); i++) {
+	if (flag2tag[i].flag == flag)
+	    *is_set = _message_has_maildir_flag(message, i);
+    }
+
     return NOTMUCH_STATUS_SUCCESS;
 }
 
@@ -1827,9 +1848,7 @@ notmuch_message_maildir_flags_to_tags (notmuch_message_t *message)
 	return status;
 
     for (i = 0; i < ARRAY_SIZE (flag2tag); i++) {
-	if ((strchr (message->maildir_flags, flag2tag[i].flag) != NULL)
-	    ^
-	    flag2tag[i].inverse) {
+	if (_message_has_maildir_flag(message, i) ^ flag2tag[i].inverse) {
 	    status = notmuch_message_add_tag (message, flag2tag[i].tag);
 	} else {
 	    status = notmuch_message_remove_tag (message, flag2tag[i].tag);
