@@ -65,15 +65,17 @@ struct maildir_flag_tag {
     char flag;
     const char *tag;
     bool inverse;
+    bool andall;
 };
 
 /* ASCII ordered table of Maildir flags and associated tags */
 static struct maildir_flag_tag flag2tag[] = {
-    { 'D', "draft",   false },
-    { 'F', "flagged", false },
-    { 'P', "passed",  false },
-    { 'R', "replied", false },
-    { 'S', "unread",  true }
+    { 'D', "draft",   false, false },
+    { 'F', "flagged", false, false },
+    { 'P', "passed",  false, false },
+    { 'R', "replied", false, false },
+    { 'S', "unread",  true,  false },
+    { 'T', "deleted", false, true }
 };
 
 /* We end up having to call the destructor explicitly because we had
@@ -1789,6 +1791,17 @@ notmuch_message_has_maildir_flag (notmuch_message_t *message, char flag)
     return ret;
 }
 
+size_t
+charcount(const char *str, const char c)
+{
+    size_t n;
+    for (n = 0; *str; str++) {
+    	if (*str == c)
+    	    n++;
+    }
+    return n;
+}
+
 /* Internal function which encapsulates the logic.
  * Assumes message->maildir_flags != NULL and leaves all
  * checks and error reporting to the caller.
@@ -1798,7 +1811,12 @@ static notmuch_bool_t
 _message_has_maildir_flag (notmuch_message_t *message,
 			   unsigned i)
 {
-    return strchr (message->maildir_flags, flag2tag[i].flag) != NULL;
+    unsigned n;
+
+    if (flag2tag[i].andall && (n = charcount (message->maildir_flags, ',')) > 1)
+	return charcount (message->maildir_flags, flag2tag[i].flag) == n;
+    else
+	return strchr (message->maildir_flags, flag2tag[i].flag) != NULL;
 }
 
 notmuch_status_t
