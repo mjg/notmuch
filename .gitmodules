@@ -1,0 +1,4 @@
+[submodule "source"]
+	path = source
+	url = git://git.notmuchmail.org/git/notmuch
+	branch = master

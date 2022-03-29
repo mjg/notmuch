@@ -1,3 +1,8 @@
+## Pull in upstream source:
+# {{{ git submodule update --init 1>&2; git submodule }}}
+%global gitversion      {{{ git -C source rev-parse HEAD }}}
+%global gitshortversion {{{ git -C source rev-parse --short HEAD }}}
+%global gitdescribefedversion	{{{ git -C source describe --tags | sed -e 's/^\(.*\)-\([0-9]*\)-g\(.*\)$/\1^\2.g\3/' }}}
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %bcond_without tests
 %else
@@ -19,15 +24,14 @@
 %endif
 
 Name:           notmuch
-Version:        0.35
-Release:        %autorelease
+Version:        %{gitdescribefedversion}
+Release:        1%{?dist}
 Summary:        System for indexing, searching, and tagging email
 License:        GPLv3+
 URL:            https://notmuchmail.org/
-Source0:        https://notmuchmail.org/releases/notmuch-%{version}.tar.xz
-Source1:        https://notmuchmail.org/releases/notmuch-%{version}.tar.xz.asc
-# Imported from public key servers; author provides no fingerprint!
-Source2:        gpgkey-7A18807F100A4570C59684207E4E65C8720B706B.gpg
+# rpkg's git_pack does not cope well with submodules, so we force it to assume a dirty tree.
+# The tree is unmodified (before possibly applying patches).
+Source:         {{{ GIT_DIRTY=1 git_pack path=source dir_name=notmuch }}}
 Patch1:		0001-test-allow-to-use-full-sync.patch
 
 BuildRequires:  make
@@ -185,8 +189,7 @@ notmuch-vim is a Vim plugin that provides a fully usable mail client
 interface, utilizing the notmuch framework.
 
 %prep
-%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
-%autosetup -p1
+%autosetup -n notmuch -p1
 
 %build
 # DEBUG mtime/stat
@@ -346,4 +349,5 @@ vim -u NONE -esX -c "helptags ." -c quit
 %{_datadir}/vim/vimfiles/syntax/notmuch-show.vim
 
 %changelog
-%autochangelog
+* Tue Mar 29 2022 Michael J Gruber <mjg@fedoraproject.org> - 0.35^29.g04b43dc4-1
+- build from git/copr
