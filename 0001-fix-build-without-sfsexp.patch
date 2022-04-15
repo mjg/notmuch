@@ -1,0 +1,80 @@
+From 50cd016213f4fbff4330ff27b05761c418bceb4c Mon Sep 17 00:00:00 2001
+Message-Id: <50cd016213f4fbff4330ff27b05761c418bceb4c.1650039637.git.git@grubix.eu>
+From: Michael J Gruber <git@grubix.eu>
+Date: Fri, 15 Apr 2022 18:16:45 +0200
+Subject: [PATCH] fix build without sfsexp
+
+a1d139de ("lib: add sexp: prefix to Xapian (infix) query parser.",
+2022-04-09) introduced sfsexp infix queries. This requires the infix
+preprocessor to be built in in a way which does not require sfsexp when
+notmuch is built without it.
+
+Make the preprocessor throw a Xapian error in this case (and fix the
+build).
+
+Signed-off-by: Michael J Gruber <git@grubix.eu>
+---
+Maybe something like this - I have not test *with* sfsexp, though.
+
+ lib/database-private.h | 4 ----
+ lib/query.cc           | 2 ++
+ lib/sexp-fp.cc         | 4 ++++
+ 3 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/lib/database-private.h b/lib/database-private.h
+index 657b1aa1..419b9fe6 100644
+--- a/lib/database-private.h
++++ b/lib/database-private.h
+@@ -354,10 +354,6 @@ _notmuch_query_string_to_xapian_query (notmuch_database_t *notmuch,
+ 				       std::string query_string,
+ 				       Xapian::Query &output,
+ 				       std::string &msg);
+-/* parse-sexp.cc */
+-notmuch_status_t
+-_notmuch_sexp_string_to_xapian_query (notmuch_database_t *notmuch, const char *querystr,
+-				      Xapian::Query &output);
+ 
+ notmuch_status_t
+ _notmuch_query_expand (notmuch_database_t *notmuch, const char *field, Xapian::Query subquery,
+diff --git a/lib/query.cc b/lib/query.cc
+index b0937fcc..707f6222 100644
+--- a/lib/query.cc
++++ b/lib/query.cc
+@@ -227,6 +227,7 @@ _notmuch_query_ensure_parsed_xapian (notmuch_query_t *query)
+     return NOTMUCH_STATUS_SUCCESS;
+ }
+ 
++#if HAVE_SFSEXP
+ static notmuch_status_t
+ _notmuch_query_ensure_parsed_sexpr (notmuch_query_t *query)
+ {
+@@ -243,6 +244,7 @@ _notmuch_query_ensure_parsed_sexpr (notmuch_query_t *query)
+     _notmuch_query_cache_terms (query);
+     return NOTMUCH_STATUS_SUCCESS;
+ }
++#endif
+ 
+ static notmuch_status_t
+ _notmuch_query_ensure_parsed (notmuch_query_t *query)
+diff --git a/lib/sexp-fp.cc b/lib/sexp-fp.cc
+index ed26f6ec..1fdf5225 100644
+--- a/lib/sexp-fp.cc
++++ b/lib/sexp-fp.cc
+@@ -30,10 +30,14 @@ SexpFieldProcessor::operator() (const std::string & query_string)
+     notmuch_status_t status;
+     Xapian::Query output;
+ 
++#if HAVE_SFSEXP
+     status = _notmuch_sexp_string_to_xapian_query (notmuch, query_string.c_str (), output);
+     if (status) {
+ 	throw Xapian::QueryParserError ("error parsing " + query_string);
+     }
++#else
++    throw Xapian::QueryParserError ("sexp query parser not available");
++#endif
+ 
+     return output;
+ 
+-- 
+2.36.0.rc2.472.gf6a51f5f41
+
