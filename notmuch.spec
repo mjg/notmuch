@@ -265,6 +265,12 @@ pushd vim
     make install DESTDIR=%{buildroot} prefix="%{_datadir}/vim/vimfiles"
 popd
 
+# Do not install notmuch-git yet
+rm -f %{buildroot}%{_mandir}/man1/nmbug.1*
+rm -f %{buildroot}%{_mandir}/man1/notmuch-git.1*
+rm -f %{buildroot}%{_infodir}/nmbug.info*
+rm -f %{buildroot}%{_infodir}/notmuch-git.info*
+
 rm -f %{buildroot}/%{_datadir}/applications/mimeinfo.cache
 rm -f %{buildroot}%{_infodir}/dir
 
