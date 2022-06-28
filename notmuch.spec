@@ -300,8 +300,10 @@ vim -u NONE -esX -c "helptags ." -c quit
 %{_datadir}/zsh/site-functions/_email-notmuch
 %{_datadir}/bash-completion/completions/notmuch
 %{_bindir}/notmuch
+%{_libdir}/libnotmuch.so.5*
 %{_mandir}/man1/notmuch.1*
 %{_mandir}/man1/notmuch-address.1*
+%{_mandir}/man1/notmuch-compact.1*
 %{_mandir}/man1/notmuch-config.1*
 %{_mandir}/man1/notmuch-count.1*
 %{_mandir}/man1/notmuch-dump.1*
@@ -314,11 +316,28 @@ vim -u NONE -esX -c "helptags ." -c quit
 %{_mandir}/man1/notmuch-setup.1*
 %{_mandir}/man1/notmuch-show.1*
 %{_mandir}/man1/notmuch-tag.1*
-%{_mandir}/man1/notmuch-compact.1*
-%{_mandir}/man5/notmuch*.5*
-%{_mandir}/man7/notmuch*.7*
-%{_infodir}/*.info*
-%{_libdir}/libnotmuch.so.5*
+%{_mandir}/man5/notmuch-hooks.5*
+%{_mandir}/man7/notmuch-properties.7*
+%{_mandir}/man7/notmuch-search-terms.7*
+%{_mandir}/man7/notmuch-sexp-queries.7*
+%{_infodir}/notmuch.info*
+%{_infodir}/notmuch-address.info*
+%{_infodir}/notmuch-compact.info*
+%{_infodir}/notmuch-config.info*
+%{_infodir}/notmuch-count.info*
+%{_infodir}/notmuch-dump.info*
+%{_infodir}/notmuch-hooks.info*
+%{_infodir}/notmuch-insert.info*
+%{_infodir}/notmuch-new.info*
+%{_infodir}/notmuch-properties.info*
+%{_infodir}/notmuch-reindex.info*
+%{_infodir}/notmuch-reply.info*
+%{_infodir}/notmuch-restore.info*
+%{_infodir}/notmuch-search-terms.info*
+%{_infodir}/notmuch-search.info*
+%{_infodir}/notmuch-sexp-queries.info*
+%{_infodir}/notmuch-show.info*
+%{_infodir}/notmuch-tag.info*
 
 %files devel
 %{_libdir}/libnotmuch.so
@@ -329,9 +348,11 @@ vim -u NONE -esX -c "helptags ." -c quit
 %{_emacs_sitelispdir}/*.el
 %{_emacs_sitelispdir}/*.elc
 %{_emacs_sitelispdir}/notmuch-logo.svg
-%{_mandir}/man1/notmuch-emacs-mua.1*
-%{_bindir}/notmuch-emacs-mua
 %{_datadir}/applications/notmuch-emacs-mua.desktop
+%{_bindir}/notmuch-emacs-mua
+%{_mandir}/man1/notmuch-emacs-mua.1*
+%{_infodir}/notmuch-emacs-mua.info*
+%{_infodir}/notmuch-emacs.info*
 
 %if 0%{?with_python2}
 %files -n python2-notmuch
