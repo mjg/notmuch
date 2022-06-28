@@ -39,6 +39,7 @@ URL:            https://notmuchmail.org/
 # The tree is unmodified (before possibly applying patches).
 Source:         {{{ GIT_DIRTY=1 git_pack path=source dir_name=notmuch }}}
 Patch1:		0001-test-allow-to-use-full-sync.patch
+Patch2:         0001-doc-provide-nmbug-link-for-notmuch-git-info-page.patch
 
 BuildRequires:  make
 BuildRequires:  bash-completion
@@ -92,6 +93,9 @@ BuildRequires:  python3-cffi
 BuildRequires:  dtach
   %endif
 BuildRequires:  gdb
+  %if %{with sfsexp}
+BuildRequires:  git-core
+  %endif
 BuildRequires:  man
 BuildRequires:  openssl
 # You might also want to rebuild with valgrind-devel libasan libasan-static.
@@ -124,6 +128,17 @@ necessary if you plan to do development using Notmuch.
 
 Install notmuch-devel if you are developing C programs which will use the
 Notmuch library.  You'll also need to install the notmuch package.
+
+%if %{with sfsexp}
+%package    git
+Summary:    Manage notmuch tags with git
+Requires:   %{name} = %{version}-%{release}
+Requires:   git-core
+
+%description git
+This package contains a simple tool to save, restore, and synchronize
+notmuch tags via git repositories.
+%endif
 
 %package -n emacs-notmuch
 Summary:    Not much support for Emacs
@@ -233,9 +248,10 @@ popd
 %if %{with tests}
 %check
 # armv7hl pulls in libasan but we build without, and should test without it.
+# notmuch-git and its tests require sfsexp.
 # At least some rhel builds show mtime/stat related Heisenbugs when
 # notmuch new takes shortcuts, so enforce --full-scan there.
-NOTMUCH_SKIP_TESTS="asan git" make test V=1 %{?rhel:NOTMUCH_TEST_FULLSCAN=1}
+NOTMUCH_SKIP_TESTS="asan%{!?with_sfsexp: git}" make test V=1 %{?rhel:NOTMUCH_TEST_FULLSCAN=1}
 %endif
 
 %install
@@ -243,6 +259,10 @@ NOTMUCH_SKIP_TESTS="asan git" make test V=1 %{?rhel:NOTMUCH_TEST_FULLSCAN=1}
 
 # Enable dynamic library stripping.
 find %{buildroot}%{_libdir} -name *.so* -exec chmod 755 {} \;
+
+%if %{with sfsexp}
+install -m0755 notmuch-git nmbug %{buildroot}%{_bindir}/
+%endif
 
 # Install the python bindings and documentation
 pushd bindings/python
@@ -277,11 +297,13 @@ pushd vim
     make install DESTDIR=%{buildroot} prefix="%{_datadir}/vim/vimfiles"
 popd
 
-# Do not install notmuch-git yet
+%if %{without sfsexp}
+# Do not install notmuch-git which requires sfsexp
 rm -f %{buildroot}%{_mandir}/man1/nmbug.1*
 rm -f %{buildroot}%{_mandir}/man1/notmuch-git.1*
 rm -f %{buildroot}%{_infodir}/nmbug.info*
 rm -f %{buildroot}%{_infodir}/notmuch-git.info*
+%endif
 
 rm -f %{buildroot}/%{_datadir}/applications/mimeinfo.cache
 rm -f %{buildroot}%{_infodir}/dir
@@ -343,6 +365,16 @@ vim -u NONE -esX -c "helptags ." -c quit
 %{_libdir}/libnotmuch.so
 %{_includedir}/*
 %{_mandir}/man3/notmuch*.3*
+
+%if %{with sfsexp}
+%files git
+%{_bindir}/nmbug
+%{_bindir}/notmuch-git
+%{_mandir}/man1/nmbug.1*
+%{_mandir}/man1/notmuch-git.1*
+%{_infodir}/nmbug.info*
+%{_infodir}/notmuch-git.info*
+%endif
 
 %files -n emacs-notmuch
 %{_emacs_sitelispdir}/*.el
