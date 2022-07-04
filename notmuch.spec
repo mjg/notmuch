@@ -39,7 +39,6 @@ URL:            https://notmuchmail.org/
 # The tree is unmodified (before possibly applying patches).
 Source:         {{{ GIT_DIRTY=1 git_pack path=source dir_name=notmuch }}}
 Patch1:		0001-test-allow-to-use-full-sync.patch
-Patch2:         0001-doc-provide-nmbug-link-for-notmuch-git-info-page.patch
 
 BuildRequires:  make
 BuildRequires:  bash-completion
@@ -357,6 +356,7 @@ vim -u NONE -esX -c "helptags ." -c quit
 %{_infodir}/notmuch-restore.info*
 %{_infodir}/notmuch-search-terms.info*
 %{_infodir}/notmuch-search.info*
+%{_infodir}/notmuch-setup.info*
 %{_infodir}/notmuch-sexp-queries.info*
 %{_infodir}/notmuch-show.info*
 %{_infodir}/notmuch-tag.info*
