@@ -18,7 +18,7 @@
 %global with_python2 1
 %endif
 
-%if 0%{?fedora} >= 36
+%if 0%{?fedora} >= 36 || 0%{?rhel} >= 9
 %bcond_without sfsexp
 %else
 %bcond_with sfsexp
