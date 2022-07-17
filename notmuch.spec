@@ -133,6 +133,9 @@ Notmuch library.  You'll also need to install the notmuch package.
 Summary:    Manage notmuch tags with git
 Requires:   %{name} = %{version}-%{release}
 Requires:   git-core
+%if 0%{?with_python3CFFI}
+Recommends: python3-notmuch2
+%endif
 
 %description git
 This package contains a simple tool to save, restore, and synchronize
