@@ -39,7 +39,6 @@ URL:            https://notmuchmail.org/
 # The tree is unmodified (before possibly applying patches).
 Source:         {{{ GIT_DIRTY=1 git_pack path=source dir_name=notmuch }}}
 Patch1:		0001-test-allow-to-use-full-sync.patch
-Patch2:		0001-test-increase-cffi-timeout.patch
 
 BuildRequires:  make
 BuildRequires:  bash-completion
