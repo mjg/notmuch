@@ -1,0 +1,30 @@
+From 2931680c1a14481cfd569a7884371c086af45a33 Mon Sep 17 00:00:00 2001
+Message-ID: <2931680c1a14481cfd569a7884371c086af45a33.1683735648.git.git@grubix.eu>
+From: Michael J Gruber <git@grubix.eu>
+Date: Wed, 10 May 2023 18:17:57 +0200
+Subject: [PATCH] test-lib: increase lisp timeout
+
+We use 2min timeouts in most part of the test suite. Increase the
+timeout for emacs lisp tests, too. This should help to avoid spurious
+failures on some loaded test platforms (noticed on copr/rawhide s390x
+ppc64le aarch64).
+---
+ test/test-lib.el | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/test-lib.el b/test/test-lib.el
+index 79a9d4d6..39ade9b9 100644
+--- a/test/test-lib.el
++++ b/test/test-lib.el
+@@ -39,7 +39,7 @@
+ (defun notmuch-test-wait ()
+   "Wait for process completion."
+   (while (get-buffer-process (current-buffer))
+-    (accept-process-output nil 0.1)))
++    (accept-process-output nil 120)))
+ 
+ (defun test-output (&optional filename)
+   "Save current buffer to file FILENAME.  Default FILENAME is OUTPUT."
+-- 
+2.40.1.683.g916cfae490
+
