@@ -2,7 +2,7 @@
 # {{{ git submodule update --init 1>&2; git submodule }}}
 %global gitversion      {{{ git -C source rev-parse HEAD }}}
 %global gitshortversion {{{ git -C source rev-parse --short HEAD }}}
-%global gitdescribefedversion	{{{ git -C source describe --tags --match '[0-9]*' | sed -e 's/^\(.*\)-\([0-9]*\)-g\(.*\)$/\1^\2.g\3/' -e 's/_rc/~rc/' }}}
+%global gitdescribefedversion {{{ git -C source describe --tags --match '[0-9]*' | sed -e 's/^\(.*\)-\([0-9]*\)-g\(.*\)$/\1^\2.g\3/' -e 's/_rc/~rc/' }}}
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %bcond_without tests
 %else
@@ -38,8 +38,9 @@ URL:            https://notmuchmail.org/
 # rpkg's git_pack does not cope well with submodules, so we force it to assume a dirty tree.
 # The tree is unmodified (before possibly applying patches).
 Source:         {{{ GIT_DIRTY=1 git_pack path=source dir_name=notmuch }}}
-Patch1:		0001-test-allow-to-use-full-sync.patch
-Patch2:		0001-test-lib-increase-lisp-timeout.patch
+Patch1:         0001-test-allow-to-use-full-scan.patch
+Patch2:         0002-test-use-NOTMUCH_NEW-consistently.patch
+Patch3:         0001-test-lib-increase-lisp-timeout.patch
 
 BuildRequires:  make
 BuildRequires:  bash-completion
@@ -252,9 +253,12 @@ popd
 %check
 # armv7hl pulls in libasan but we build without, and should test without it.
 # notmuch-git and its tests require sfsexp.
+# At least on koji/copr, test suite suffers from race conditions when parallelised.
 # At least some rhel builds show mtime/stat related Heisenbugs when
 # notmuch new takes shortcuts, so enforce --full-scan there.
-NOTMUCH_SKIP_TESTS="asan%{!?with_sfsexp: git}" make test V=1 %{?rhel:NOTMUCH_TEST_FULLSCAN=1}
+NOTMUCH_SKIP_TESTS="asan%{!?with_sfsexp: git}" \
+NOTMUCH_TEST_SERIALIZE="yesplease" \
+make test V=1 %{?rhel:NOTMUCH_TEST_FULLSCAN=1}
 %endif
 
 %install
