@@ -89,7 +89,9 @@ BuildRequires:  python3-cffi
 
 %if %{with tests}
 # Not available on *EL, skip some tests there:
-  %if 0%{?fedora}
+# copr only: use mjg/dtach-epel
+# emacs 26 on EL8 is too old
+  %if 0%{?fedora} || 0%{?rhel} >=9
 BuildRequires:  dtach
   %endif
 BuildRequires:  gdb
@@ -252,10 +254,11 @@ popd
 %check
 # armv7hl pulls in libasan but we build without, and should test without it.
 # notmuch-git and its tests require sfsexp.
+# T460-emacs-tree.23 uses outline-cycle-buffer which requires emacs 28
 # At least on koji/copr, test suite suffers from race conditions when parallelised.
 # At least some rhel builds show mtime/stat related Heisenbugs when
 # notmuch new takes shortcuts, so enforce --full-scan there.
-NOTMUCH_SKIP_TESTS="asan%{!?with_sfsexp: git}" \
+NOTMUCH_SKIP_TESTS="asan%{!?with_sfsexp: git}%{?rhel: emacs-tree.23}" \
 NOTMUCH_TEST_SERIALIZE="yesplease" \
 make test V=1 %{?rhel:NOTMUCH_TEST_FULLSCAN=1}
 %endif
