@@ -40,6 +40,8 @@ URL:            https://notmuchmail.org/
 Source:         {{{ GIT_DIRTY=1 git_pack path=source dir_name=notmuch }}}
 Patch1:         0001-test-allow-to-use-full-scan.patch
 Patch2:         0002-test-use-NOTMUCH_NEW-consistently.patch
+Patch3:         0001-CLI-config-simulate-top-level-comments-when-creating.patch
+Patch4:         0002-test-setup-ignore-blank-lines-in-generated-config.patch
 
 BuildRequires:  make
 BuildRequires:  bash-completion

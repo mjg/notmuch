@@ -1,0 +1,76 @@
+From 2c38eeba9287dc9f846d855a00d9413cd637b0c5 Mon Sep 17 00:00:00 2001
+Message-ID: <2c38eeba9287dc9f846d855a00d9413cd637b0c5.1692547930.git.git@grubix.eu>
+In-Reply-To: <e8b6463cda9be086bcb66e8adfb8abf0a53948a5.1692547930.git.git@grubix.eu>
+References: <e8b6463cda9be086bcb66e8adfb8abf0a53948a5.1692547930.git.git@grubix.eu>
+From: David Bremner <david@tethera.net>
+Date: Sun, 20 Aug 2023 12:45:41 -0300
+Subject: [PATCH 2/2] test/setup: ignore blank lines in generated config
+
+The presense of the blank lines between sections depends on the
+version of glib. Strip them before comparison.
+---
+ test/T040-setup.sh                              | 3 ++-
+ test/setup.expected-output/config-with-comments | 5 -----
+ 2 files changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/test/T040-setup.sh b/test/T040-setup.sh
+index 10b29ec3..39846d34 100755
+--- a/test/T040-setup.sh
++++ b/test/T040-setup.sh
+@@ -21,7 +21,8 @@ baz
+ EOF
+ 
+ expected_dir=$NOTMUCH_SRCDIR/test/setup.expected-output
+-test_expect_equal_file ${expected_dir}/config-with-comments new-notmuch-config
++sed '/^$/d' < new-notmuch-config > filtered-config
++test_expect_equal_file ${expected_dir}/config-with-comments filtered-config
+ 
+ test_begin_subtest "setup consistent with config-set for single items"
+ # note this relies on the config state from the previous test.
+diff --git a/test/setup.expected-output/config-with-comments b/test/setup.expected-output/config-with-comments
+index d8397714..d925acea 100644
+--- a/test/setup.expected-output/config-with-comments
++++ b/test/setup.expected-output/config-with-comments
+@@ -1,7 +1,6 @@
+ # .notmuch-config - Configuration file for the notmuch mail system
+ #
+ # For more information about notmuch, see https://notmuchmail.org
+-
+ # Database configuration
+ #
+ # The only value supported here is 'path' which should be the top-level
+@@ -12,7 +11,6 @@
+ #
+ [database]
+ path=/path/to/maildir
+-
+ # User configuration
+ #
+ # Here is where you can let notmuch know how you would like to be
+@@ -32,7 +30,6 @@ path=/path/to/maildir
+ name=Test Suite
+ primary_email=test.suite@example.com
+ other_email=another.suite@example.com
+-
+ # Configuration for "notmuch new"
+ #
+ # The following options are supported here:
+@@ -49,7 +46,6 @@ other_email=another.suite@example.com
+ #
+ [new]
+ tags=foo;bar;
+-
+ # Search configuration
+ #
+ # The following option is supported here:
+@@ -61,7 +57,6 @@ tags=foo;bar;
+ #
+ [search]
+ exclude_tags=baz
+-
+ # Maildir compatibility configuration
+ #
+ # The following option is supported here:
+-- 
+2.42.0.rc2.257.g75c4c78f12
+
