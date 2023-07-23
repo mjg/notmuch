@@ -1,7 +1,7 @@
-From 1ec90f62cda70354d1f7467a479c2427d3503e3c Mon Sep 17 00:00:00 2001
-Message-ID: <1ec90f62cda70354d1f7467a479c2427d3503e3c.1685027580.git.git@grubix.eu>
-In-Reply-To: <d86366db6d485aa1b68e410954a238061ddb7eda.1685027580.git.git@grubix.eu>
-References: <d86366db6d485aa1b68e410954a238061ddb7eda.1685027580.git.git@grubix.eu>
+From f6816e32e2869463214ce0ed5307f3182105a5bd Mon Sep 17 00:00:00 2001
+Message-ID: <f6816e32e2869463214ce0ed5307f3182105a5bd.1690117903.git.git@grubix.eu>
+In-Reply-To: <21dcc45a0e035299c067dff309e29b712768e5cd.1690117903.git.git@grubix.eu>
+References: <21dcc45a0e035299c067dff309e29b712768e5cd.1690117903.git.git@grubix.eu>
 From: Michael J Gruber <git@grubix.eu>
 Date: Thu, 25 May 2023 13:49:01 +0200
 Subject: [PATCH 2/2] test: use NOTMUCH_NEW consistently
@@ -33,7 +33,7 @@ sanitizes the output and returns the exit code of the filter as before.
  test/T260-thread-order.sh              |  6 +-
  test/T270-author-order.sh              | 10 +--
  test/T290-long-id.sh                   |  6 +-
- test/T310-emacs.sh                     |  2 +-
+ test/T310-emacs.sh                     |  3 +-
  test/T320-emacs-large-search-buffer.sh |  2 +-
  test/T340-maildir-sync.sh              | 16 ++---
  test/T357-index-decryption.sh          |  4 +-
@@ -58,7 +58,7 @@ sanitizes the output and returns the exit code of the filter as before.
  test/T750-gzip.sh                      | 12 ++--
  test/test-lib-emacs.sh                 |  4 +-
  test/test-lib.sh                       |  6 +-
- 42 files changed, 150 insertions(+), 146 deletions(-)
+ 42 files changed, 150 insertions(+), 147 deletions(-)
 
 diff --git a/test/T030-config.sh b/test/T030-config.sh
 index ea0b4012..e74ce84f 100755
@@ -548,10 +548,10 @@ index 73953272..1ca23690 100755
  # We use generate_message to create the temporary message files.
  # They happen to be in the mail directory already but that is okay
 diff --git a/test/T080-search.sh b/test/T080-search.sh
-index a3f0dead..10bbbb7b 100755
+index 515eb88f..e39b0490 100755
 --- a/test/T080-search.sh
 +++ b/test/T080-search.sh
-@@ -173,7 +173,7 @@ x y z
+@@ -180,7 +180,7 @@ x y z
  
  --==-==--
  EOF
@@ -561,7 +561,7 @@ index a3f0dead..10bbbb7b 100755
  test_begin_subtest "headers do not have adjacent term positions"
  # Regression test for a bug where term positions for non-prefixed
 diff --git a/test/T081-sexpr-search.sh b/test/T081-sexpr-search.sh
-index 0c7db9c2..85c3a4b1 100755
+index 8800b545..4aef6f2c 100755
 --- a/test/T081-sexpr-search.sh
 +++ b/test/T081-sexpr-search.sh
 @@ -625,7 +625,7 @@ notmuch config set search.exclude_tags deleted
@@ -574,7 +574,7 @@ index 0c7db9c2..85c3a4b1 100755
  deleted_id=$gen_msg_id
  output=$(notmuch search --query=sexp '(subject deleted)' | notmuch_search_sanitize)
 diff --git a/test/T095-address.sh b/test/T095-address.sh
-index 8bb3627a..62b280b6 100755
+index 0cafbe20..61ffb33f 100755
 --- a/test/T095-address.sh
 +++ b/test/T095-address.sh
 @@ -286,7 +286,7 @@ generate_message '[from]="foo.bar@example.com"'
@@ -684,7 +684,7 @@ index 44082028..01949b11 100755
  for pow in {10..20}; do
      printf -v size "%07d" $((2**$pow))
 diff --git a/test/T240-dump-restore.sh b/test/T240-dump-restore.sh
-index a86f0fb7..88fec112 100755
+index c3f18839..035535f0 100755
 --- a/test/T240-dump-restore.sh
 +++ b/test/T240-dump-restore.sh
 @@ -2,7 +2,7 @@
@@ -807,13 +807,14 @@ index 5e3879f5..a73dc9e7 100755
  
  test_begin_subtest "Ensure all messages were threaded together"
 diff --git a/test/T310-emacs.sh b/test/T310-emacs.sh
-index 9d0df187..4e985c0e 100755
+index d3aa2e7d..04efb6c7 100755
 --- a/test/T310-emacs.sh
 +++ b/test/T310-emacs.sh
-@@ -258,7 +258,7 @@ EOF
+@@ -258,8 +258,7 @@ EOF
  test_expect_equal_file EXPECTED OUTPUT
  
  test_begin_subtest "Verify that sent messages are saved/searchable (via FCC)"
+-test_subtest_broken_for_installed
 -notmuch new > /dev/null
 +NOTMUCH_NEW > /dev/null
  output=$(notmuch search 'subject:"testing message sent via SMTP"' | notmuch_search_sanitize)
@@ -995,10 +996,10 @@ index d8bb502d..38b6fe46 100755
  Added 1024 new messages to the database.
  EOF
 diff --git a/test/T395-ruby.sh b/test/T395-ruby.sh
-index c066c842..d1246729 100755
+index d0c6bb17..439621bb 100755
 --- a/test/T395-ruby.sh
 +++ b/test/T395-ruby.sh
-@@ -68,7 +68,7 @@ EOF
+@@ -72,7 +72,7 @@ EOF
  notmuch config set search.exclude_tags deleted
  generate_message '[subject]="Good"'
  generate_message '[subject]="Bad"' "[in-reply-to]=\<$gen_msg_id\>"
@@ -1185,10 +1186,10 @@ index 5f0de2ed..71d5bd20 100755
  Backing up tags to CWD/home/backups/dump-XXX.gz...
  EOF
 diff --git a/test/T550-db-features.sh b/test/T550-db-features.sh
-index 9d5a9e70..53aae52e 100755
+index 3048c7c4..0f28e60f 100755
 --- a/test/T550-db-features.sh
 +++ b/test/T550-db-features.sh
-@@ -14,7 +14,7 @@ Error: Notmuch database at FILENAME
+@@ -18,7 +18,7 @@ Error: Notmuch database at FILENAME
  
  test_begin_subtest "unknown 'rw' feature aborts read/write open"
  ${TEST_DIRECTORY}/make-db-version ${MAIL_DIR} 3 $'test feature\trw'
@@ -1197,7 +1198,7 @@ index 9d5a9e70..53aae52e 100755
  rm -rf ${MAIL_DIR}/.notmuch
  test_expect_equal "$output" "\
  Error: Notmuch database at FILENAME
-@@ -32,7 +32,7 @@ Error: Notmuch database at FILENAME
+@@ -36,7 +36,7 @@ Error: Notmuch database at FILENAME
  
  test_begin_subtest "unknown 'w' feature aborts read/write open"
  ${TEST_DIRECTORY}/make-db-version ${MAIL_DIR} 3 $'test feature\tw'
@@ -1259,10 +1260,10 @@ index 53a63bf6..e10edd70 100755
  cat <<EOF > c_head
  #include <notmuch-test.h>
 diff --git a/test/T566-lib-message.sh b/test/T566-lib-message.sh
-index 7f0e8eb0..9ff10821 100755
+index 69051937..8472f57b 100755
 --- a/test/T566-lib-message.sh
 +++ b/test/T566-lib-message.sh
-@@ -6,7 +6,7 @@ test_description="API tests for notmuch_message_*"
+@@ -10,7 +10,7 @@ fi
  add_email_corpus
  
  test_begin_subtest "building database"
@@ -1285,10 +1286,10 @@ index b4c24ca2..5eec191b 100755
  test_begin_subtest "finding thread"
  THREAD=$(notmuch search --output=threads id:20091117190054.GU3165@dottiness.seas.harvard.edu)
 diff --git a/test/T592-thread-breakage.sh b/test/T592-thread-breakage.sh
-index 92a70e3e..a17ef50e 100755
+index 2334fcaf..fab17799 100755
 --- a/test/T592-thread-breakage.sh
 +++ b/test/T592-thread-breakage.sh
-@@ -70,41 +70,41 @@ test_ghost_count () {
+@@ -74,41 +74,41 @@ test_ghost_count () {
      test_expect_equal "$ghosts" "$1"
  }
  
@@ -1336,7 +1337,7 @@ index 92a70e3e..a17ef50e 100755
  test_thread_count 1 'Removing second message: still only one thread'
  test_content_count apple 1
  test_content_count banana 0
-@@ -115,7 +115,7 @@ ghosts=$($NOTMUCH_BUILDDIR/test/ghost-report ${MAIL_DIR}/.notmuch/xapian)
+@@ -119,7 +119,7 @@ ghosts=$($NOTMUCH_BUILDDIR/test/ghost-report ${MAIL_DIR}/.notmuch/xapian)
  test_expect_equal "$ghosts" "0"
  
  rm -f ${MAIL_DIR}/cur/a
@@ -1405,10 +1406,10 @@ index 5648896f..cbec22ca 100755
  No new mail. Detected 1 file rename."
  
 diff --git a/test/test-lib-emacs.sh b/test/test-lib-emacs.sh
-index ad4c4aeb..d5827751 100644
+index 0ab58fc2..bf0d13bd 100644
 --- a/test/test-lib-emacs.sh
 +++ b/test/test-lib-emacs.sh
-@@ -61,7 +61,7 @@ emacs_deliver_message () {
+@@ -62,7 +62,7 @@ emacs_deliver_message () {
      # before exiting and resuming control here; therefore making sure
      # that server exits by sending (KILL) signal to it is safe.
      kill -9 $smtp_dummy_pid
@@ -1417,7 +1418,7 @@ index ad4c4aeb..d5827751 100644
  }
  
  # Pretend to deliver a message with emacs. Really save it to a file
-@@ -102,7 +102,7 @@ emacs_fcc_message () {
+@@ -103,7 +103,7 @@ emacs_fcc_message () {
  	   (let ((mml-secure-smime-sign-with-sender t)
  		 (mml-secure-openpgp-sign-with-sender t))
  	     (notmuch-mua-send-and-exit)))" || return 1
@@ -1427,7 +1428,7 @@ index ad4c4aeb..d5827751 100644
  
  test_emacs_expect_t () {
 diff --git a/test/test-lib.sh b/test/test-lib.sh
-index 569142e1..17e403d6 100644
+index 8af291b2..d87c9ee4 100644
 --- a/test/test-lib.sh
 +++ b/test/test-lib.sh
 @@ -299,7 +299,7 @@ add_email_corpus () {
@@ -1439,7 +1440,7 @@ index 569142e1..17e403d6 100644
  }
  
  test_begin_subtest () {
-@@ -468,6 +468,10 @@ test_json_nodes () {
+@@ -476,6 +476,10 @@ test_json_nodes () {
  }
  
  NOTMUCH_NEW () {
@@ -1451,5 +1452,5 @@ index 569142e1..17e403d6 100644
  }
  
 -- 
-2.41.0.rc1.178.gd8fba8690d
+2.41.0.602.g6d7d117f0f
 

@@ -1,5 +1,5 @@
-From d86366db6d485aa1b68e410954a238061ddb7eda Mon Sep 17 00:00:00 2001
-Message-ID: <d86366db6d485aa1b68e410954a238061ddb7eda.1685027580.git.git@grubix.eu>
+From 21dcc45a0e035299c067dff309e29b712768e5cd Mon Sep 17 00:00:00 2001
+Message-ID: <21dcc45a0e035299c067dff309e29b712768e5cd.1690117903.git.git@grubix.eu>
 From: Michael J Gruber <git@grubix.eu>
 Date: Tue, 15 Feb 2022 17:38:02 +0100
 Subject: [PATCH 1/2] test: allow to use --full-scan
@@ -15,7 +15,7 @@ can use the test suite while avoiding spurious failures.
  3 files changed, 15 insertions(+), 2 deletions(-)
 
 diff --git a/test/README b/test/README
-index 10f127cb..ea540335 100644
+index a81808b1..d817672a 100644
 --- a/test/README
 +++ b/test/README
 @@ -110,6 +110,14 @@ printed on screen. This printing can be disabled by setting the
@@ -34,22 +34,22 @@ index 10f127cb..ea540335 100644
  --------------
  If, for any reason, you need to skip one or more tests, you can do so
 diff --git a/test/test-lib-common.sh b/test/test-lib-common.sh
-index 18fa29c0..0d64b771 100644
+index f5d72e12..6105f591 100644
 --- a/test/test-lib-common.sh
 +++ b/test/test-lib-common.sh
-@@ -29,6 +29,11 @@ if [[ -z "$NOTMUCH_SRCDIR" ]] || [[ -z "$NOTMUCH_BUILDDIR" ]]; then
- 	exit 1
- fi
+@@ -43,6 +43,11 @@ test_require_external_prereq () {
+ 	fi
+ }
  
 +if test -n "$NOTMUCH_TEST_FULLSCAN"
 +then
 +	NOTMUCH_NEW_OPTIONS="--full-scan"
 +fi
 +
- # Explicitly require external prerequisite.  Useful when binary is
- # called indirectly (e.g. from emacs).
- # Returns success if dependency is available, failure otherwise.
-@@ -240,7 +245,7 @@ EOF
+ backup_database () {
+     test_name=$(basename $0 .sh)
+     rm -rf $TMP_DIRECTORY/notmuch-dir-backup."$test_name"
+@@ -242,7 +247,7 @@ EOF
  # are also supported here, so see that function for details.
  add_message () {
      generate_message "$@" &&
@@ -59,10 +59,10 @@ index 18fa29c0..0d64b771 100644
  
  if test -n "$valgrind"
 diff --git a/test/test-lib.sh b/test/test-lib.sh
-index 1a6525df..569142e1 100644
+index 059e110c..8af291b2 100644
 --- a/test/test-lib.sh
 +++ b/test/test-lib.sh
-@@ -468,7 +468,7 @@ test_json_nodes () {
+@@ -476,7 +476,7 @@ test_json_nodes () {
  }
  
  NOTMUCH_NEW () {
@@ -72,5 +72,5 @@ index 1a6525df..569142e1 100644
  
  NOTMUCH_DUMP_TAGS () {
 -- 
-2.41.0.rc1.178.gd8fba8690d
+2.41.0.602.g6d7d117f0f
 
