@@ -1,0 +1,32 @@
+From ba458f30aaf99919ef6056eb99a65a9d6b7ca477 Mon Sep 17 00:00:00 2001
+Message-ID: <ba458f30aaf99919ef6056eb99a65a9d6b7ca477.1692556783.git.git@grubix.eu>
+In-Reply-To: <e8b6463cda9be086bcb66e8adfb8abf0a53948a5.1692556783.git.git@grubix.eu>
+References: <e8b6463cda9be086bcb66e8adfb8abf0a53948a5.1692556783.git.git@grubix.eu>
+From: David Bremner <david@tethera.net>
+Date: Sun, 20 Aug 2023 14:37:51 -0300
+Subject: [PATCH 3/3] test/emacs: adapt to breaking change in Gnus defaults
+
+As of Emacs 29.1, In-Reply-To is in the default value for
+message-hidden-headers. We actually want to see that in the test
+suite, so remove it again. To future proof the tests, fix a default
+value for message-hidden-headers specifically for the test suite.
+---
+ test/test-lib.el | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/test/test-lib.el b/test/test-lib.el
+index 79a9d4d6..236dd99e 100644
+--- a/test/test-lib.el
++++ b/test/test-lib.el
+@@ -205,3 +205,8 @@ running, quit if it terminated."
+ ;; environments
+ 
+ (setq mm-text-html-renderer 'html2text)
++
++;; Set our own default for message-hidden-headers, to avoid tests
++;; breaking when the Emacs default changes.
++(setq message-hidden-headers
++      '("^References:" "^Face:" "^X-Face:" "^X-Draft-From:"))
+-- 
+2.42.0.rc2.257.g75c4c78f12
+

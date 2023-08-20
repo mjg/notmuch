@@ -1,10 +1,10 @@
 From 2c38eeba9287dc9f846d855a00d9413cd637b0c5 Mon Sep 17 00:00:00 2001
-Message-ID: <2c38eeba9287dc9f846d855a00d9413cd637b0c5.1692547930.git.git@grubix.eu>
-In-Reply-To: <e8b6463cda9be086bcb66e8adfb8abf0a53948a5.1692547930.git.git@grubix.eu>
-References: <e8b6463cda9be086bcb66e8adfb8abf0a53948a5.1692547930.git.git@grubix.eu>
+Message-ID: <2c38eeba9287dc9f846d855a00d9413cd637b0c5.1692556783.git.git@grubix.eu>
+In-Reply-To: <e8b6463cda9be086bcb66e8adfb8abf0a53948a5.1692556783.git.git@grubix.eu>
+References: <e8b6463cda9be086bcb66e8adfb8abf0a53948a5.1692556783.git.git@grubix.eu>
 From: David Bremner <david@tethera.net>
 Date: Sun, 20 Aug 2023 12:45:41 -0300
-Subject: [PATCH 2/2] test/setup: ignore blank lines in generated config
+Subject: [PATCH 2/3] test/setup: ignore blank lines in generated config
 
 The presense of the blank lines between sections depends on the
 version of glib. Strip them before comparison.
