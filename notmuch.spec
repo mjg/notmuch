@@ -42,7 +42,6 @@ Patch1:         0001-test-allow-to-use-full-scan.patch
 Patch2:         0002-test-use-NOTMUCH_NEW-consistently.patch
 Patch3:         0001-CLI-config-simulate-top-level-comments-when-creating.patch
 Patch4:         0002-test-setup-ignore-blank-lines-in-generated-config.patch
-Patch5:         0003-test-emacs-adapt-to-breaking-change-in-Gnus-defaults.patch
 
 BuildRequires:  make
 BuildRequires:  bash-completion
