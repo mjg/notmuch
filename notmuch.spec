@@ -24,6 +24,16 @@
 %bcond_with sfsexp
 %endif
 
+# comparing {_emacs_version} in macros does not work well
+# so we catch the major version bumps ;)
+# read "with emacs at least"
+%if 0%{?fedora} >= 37 || 0%{?rhel} >= 10
+%global with_emacs28 1
+%endif
+%if 0%{?fedora} >= 39 || 0%{?rhel} >= 10
+%global with_emacs29 1
+%endif
+
 # build python 3 modules with python 3 ;)
 %if 0%{?with_python3legacy} || 0%{?with_python3CFFI}
 %global with_python3 1
@@ -253,12 +263,15 @@ popd
 %if %{with tests}
 %check
 # armv7hl pulls in libasan but we build without, and should test without it.
+NOTMUCH_SKIP_TESTS="asan"
 # notmuch-git and its tests require sfsexp.
+NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS%{!?with_sfsexp: git}"
 # T460-emacs-tree.23 uses outline-cycle-buffer which requires emacs 28
+NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS%{!?with_emacs28: emacs-tree.23}"
 # At least on koji/copr, test suite suffers from race conditions when parallelised.
 # At least some rhel builds show mtime/stat related Heisenbugs when
 # notmuch new takes shortcuts, so enforce --full-scan there.
-NOTMUCH_SKIP_TESTS="asan%{!?with_sfsexp: git}%{?rhel: emacs-tree.23}" \
+NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS" \
 NOTMUCH_TEST_SERIALIZE="yesplease" \
 make test V=1 %{?rhel:NOTMUCH_TEST_FULLSCAN=1}
 %endif
