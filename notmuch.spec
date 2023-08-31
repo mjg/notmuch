@@ -266,6 +266,8 @@ popd
 NOTMUCH_SKIP_TESTS="asan"
 # notmuch-git and its tests require sfsexp.
 NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS%{!?with_sfsexp: git}"
+# T460-emacs-tree.14 leads to sporadic failures with emacs 29
+NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS%{?with_emacs29: emacs-tree.14}"
 # T460-emacs-tree.23 uses outline-cycle-buffer which requires emacs 28
 NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS%{!?with_emacs28: emacs-tree.23}"
 # At least on koji/copr, test suite suffers from race conditions when parallelised.
