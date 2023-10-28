@@ -53,6 +53,7 @@ Patch2:         0002-test-use-NOTMUCH_NEW-consistently.patch
 
 BuildRequires:  make
 BuildRequires:  bash-completion
+BuildRequires:  desktop-file-utils
 BuildRequires:  emacs
 BuildRequires:  emacs-el
 BuildRequires:  emacs-nox
