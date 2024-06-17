@@ -50,6 +50,8 @@ URL:            https://notmuchmail.org/
 Source:         {{{ GIT_DIRTY=1 git_pack path=source dir_name=notmuch }}}
 Patch1:         0001-test-allow-to-use-full-scan.patch
 Patch2:         0002-test-use-NOTMUCH_NEW-consistently.patch
+Patch3:         0001-Replace-without-restriction-with-save-restriction.patch
+Patch4:         0002-Replace-delete-line-with-its-definition.patch
 
 BuildRequires:  make
 %if 0%{?fedora} >= 41
