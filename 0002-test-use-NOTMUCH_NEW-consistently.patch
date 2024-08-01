@@ -1,10 +1,10 @@
-From f6816e32e2869463214ce0ed5307f3182105a5bd Mon Sep 17 00:00:00 2001
-Message-ID: <f6816e32e2869463214ce0ed5307f3182105a5bd.1690117903.git.git@grubix.eu>
-In-Reply-To: <21dcc45a0e035299c067dff309e29b712768e5cd.1690117903.git.git@grubix.eu>
-References: <21dcc45a0e035299c067dff309e29b712768e5cd.1690117903.git.git@grubix.eu>
+From f955490874d1ce003e2e8ecb48a54d895f104823 Mon Sep 17 00:00:00 2001
+Message-ID: <f955490874d1ce003e2e8ecb48a54d895f104823.1722592324.git.git@grubix.eu>
+In-Reply-To: <71f2f7f0ecae56d835a29aa5a3a4da7ebf218adc.1722592324.git.git@grubix.eu>
+References: <71f2f7f0ecae56d835a29aa5a3a4da7ebf218adc.1722592324.git.git@grubix.eu>
 From: Michael J Gruber <git@grubix.eu>
 Date: Thu, 25 May 2023 13:49:01 +0200
-Subject: [PATCH 2/2] test: use NOTMUCH_NEW consistently
+Subject: [PATCH 2/3] test: use NOTMUCH_NEW consistently
 
 The test suite provides `NOTMUCH_NEW ()` primarily as a way to sanitize
 the output of `notmuch new`. As a side effect, this allows to pass
@@ -28,6 +28,7 @@ sanitizes the output and returns the exit code of the filter as before.
  test/T100-search-by-folder.sh          |  6 +-
  test/T140-excludes.sh                  |  4 +-
  test/T190-multipart.sh                 |  6 +-
+ test/T206-author-separator.sh          |  6 +-
  test/T210-raw.sh                       |  2 +-
  test/T240-dump-restore.sh              |  4 +-
  test/T260-thread-order.sh              |  6 +-
@@ -58,13 +59,13 @@ sanitizes the output and returns the exit code of the filter as before.
  test/T750-gzip.sh                      | 12 ++--
  test/test-lib-emacs.sh                 |  4 +-
  test/test-lib.sh                       |  6 +-
- 42 files changed, 150 insertions(+), 147 deletions(-)
+ 43 files changed, 153 insertions(+), 150 deletions(-)
 
 diff --git a/test/T030-config.sh b/test/T030-config.sh
-index ea0b4012..e74ce84f 100755
+index 1d2b7df8..eb0bbf80 100755
 --- a/test/T030-config.sh
 +++ b/test/T030-config.sh
-@@ -157,7 +157,7 @@ test_expect_equal "${path} ${count}" \
+@@ -161,7 +161,7 @@ test_expect_equal "${path} ${count}" \
  		  "CWD/home/Maildir 52"
  
  test_begin_subtest "Add config to database"
@@ -73,7 +74,7 @@ index ea0b4012..e74ce84f 100755
  key=g${RANDOM}.m${RANDOM}
  value=${RANDOM}
  notmuch config set --database ${key} ${value}
-@@ -169,7 +169,7 @@ EOF
+@@ -173,7 +173,7 @@ EOF
  test_expect_equal_file EXPECTED OUTPUT
  
  test_begin_subtest "Roundtrip config to/from database"
@@ -490,7 +491,7 @@ index ebd06be1..c7ee432a 100755
  
  test_begin_subtest "Files remain the same"
 diff --git a/test/T055-path-config.sh b/test/T055-path-config.sh
-index efc79e8b..e82a6b1b 100755
+index 049b745e..7a0ab72d 100755
 --- a/test/T055-path-config.sh
 +++ b/test/T055-path-config.sh
 @@ -182,19 +182,19 @@ EOF
@@ -525,7 +526,7 @@ index efc79e8b..e82a6b1b 100755
      test_expect_equal \
  	"$output" \
  	"Welcome to a new version of notmuch! Your database will now be upgraded."
-@@ -378,7 +378,7 @@ EOF
+@@ -387,7 +387,7 @@ EOF
  	   backup_database
  	   test_begin_subtest ".notmuch without xapian/ handled gracefully ($config)"
  	   rm -r $XAPIAN_PATH
@@ -670,6 +671,31 @@ index cfe48ac5..c30ca5ca 100755
  
  cat <<EOF > EXPECTED
  attachment
+diff --git a/test/T206-author-separator.sh b/test/T206-author-separator.sh
+index b8b1afb4..5fc4018a 100755
+--- a/test/T206-author-separator.sh
++++ b/test/T206-author-separator.sh
+@@ -4,17 +4,17 @@ test_description="custom separator for authors"
+ 
+ test_begin_subtest "Adding parent message"
+ generate_message [body]=findme [id]=new-parent-id [subject]=author-reorder-threadtest '[from]="User <user@example.com>"' '[date]="Sat, 01 Jan 2000 12:00:00 -0000"'
+-output=$(NOTMUCH_NEW)
++output=$(NOTMUCH_NEW_SANITIZE)
+ test_expect_equal "$output" "Added 1 new message to the database."
+ 
+ test_begin_subtest "Adding initial child message"
+ generate_message [body]=findme "[in-reply-to]=\<new-parent-id\>" [subject]=author-reorder-threadtest '[from]="last name, first name <user1@example.com>"' '[date]="Sat, 01 Jan 2000 12:01:00 -0000"'
+-output=$(NOTMUCH_NEW)
++output=$(NOTMUCH_NEW_SANITIZE)
+ test_expect_equal "$output" "Added 1 new message to the database."
+ 
+ test_begin_subtest "Adding second child message"
+ generate_message [body]=findme "[in-reply-to]=\<new-parent-id\>" [subject]=author-reorder-threadtest '[from]="first last <user2@example.com>"' '[date]="Sat, 01 Jan 2000 12:02:00 -0000"'
+-output=$(NOTMUCH_NEW)
++output=$(NOTMUCH_NEW_SANITIZE)
+ test_expect_equal "$output" "Added 1 new message to the database."
+ 
+ test_begin_subtest "Custom separarator is used"
 diff --git a/test/T210-raw.sh b/test/T210-raw.sh
 index 44082028..01949b11 100755
 --- a/test/T210-raw.sh
@@ -807,7 +833,7 @@ index 5e3879f5..a73dc9e7 100755
  
  test_begin_subtest "Ensure all messages were threaded together"
 diff --git a/test/T310-emacs.sh b/test/T310-emacs.sh
-index d3aa2e7d..04efb6c7 100755
+index e96c1601..9c05491c 100755
 --- a/test/T310-emacs.sh
 +++ b/test/T310-emacs.sh
 @@ -258,8 +258,7 @@ EOF
@@ -1452,5 +1478,5 @@ index 8af291b2..d87c9ee4 100644
  }
  
 -- 
-2.41.0.602.g6d7d117f0f
+2.46.0.282.g6b86a0aa17
 
