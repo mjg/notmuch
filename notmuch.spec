@@ -22,7 +22,7 @@ Name:           notmuch
 Version:        %{gitdescribefedversion}
 Release:        1%{?dist}
 Summary:        System for indexing, searching, and tagging email
-License:        GPLv3+
+License:        GPL-3.0-or-later
 URL:            https://notmuchmail.org/
 # rpkg's git_pack does not cope well with submodules, so we force it to assume a dirty tree.
 # The tree is unmodified (before possibly applying patches).
@@ -72,7 +72,6 @@ BuildRequires:  python3-pytest-shutil
 BuildRequires:  python3-cffi
 # Not available on *EL, skip some tests there:
 # copr only: use mjg/dtach-epel
-# emacs 26 on EL8 is too old
   %if 0%{?fedora} || 0%{?rhel} >=9
 BuildRequires:  dtach
   %endif
