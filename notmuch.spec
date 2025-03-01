@@ -1,28 +1,13 @@
 ## Pull in upstream source:
 # {{{ git submodule update --init 1>&2; git submodule }}}
+# {{{ git -C source tag -f 0.39_rc1 45400904 }}}
 %global gitversion      {{{ git -C source rev-parse HEAD }}}
 %global gitshortversion {{{ git -C source rev-parse --short HEAD }}}
 %global gitdescribefedversion {{{ git -C source describe --tags --match '[0-9]*' | sed -e 's/^\(.*\)-\([0-9]*\)-g\(.*\)$/\1^\2.g\3/' -e 's/_rc/~rc/' -e 's/_pre/~pre/' }}}
-%if 0%{?fedora} || 0%{?rhel} >= 8
+
+# We used to set these based on fedora/rhel versions. Keep them in case for now.
 %bcond_without tests
-%else
-%bcond_with tests
-%endif
-
-%if 0%{?fedora} || 0%{?rhel} >= 8
-%global with_python3legacy 1
-%global with_python3CFFI 1
-%endif
-
-%if 0%{?rhel} && 0%{?rhel} <= 7
-%global with_python2 1
-%endif
-
-%if 0%{?fedora} >= 36 || 0%{?rhel} >= 9
 %bcond_without sfsexp
-%else
-%bcond_with sfsexp
-%endif
 
 # comparing {_emacs_version} in macros does not work well
 # so we catch the major version bumps ;)
@@ -30,29 +15,29 @@
 %if 0%{?fedora} >= 37 || 0%{?rhel} >= 10
 %global with_emacs28 1
 %endif
-%if 0%{?fedora} >= 39 || 0%{?rhel} >= 10
+%if 0%{?fedora} >= 38 || 0%{?rhel} >= 10
 %global with_emacs29 1
-%endif
-
-# build python 3 modules with python 3 ;)
-%if 0%{?with_python3legacy} || 0%{?with_python3CFFI}
-%global with_python3 1
 %endif
 
 Name:           notmuch
 Version:        %{gitdescribefedversion}
 Release:        1%{?dist}
 Summary:        System for indexing, searching, and tagging email
-License:        GPLv3+
+License:        GPL-3.0-or-later
 URL:            https://notmuchmail.org/
 # rpkg's git_pack does not cope well with submodules, so we force it to assume a dirty tree.
 # The tree is unmodified (before possibly applying patches).
 Source:         {{{ GIT_DIRTY=1 git_pack path=source dir_name=notmuch }}}
 Patch1:         0001-test-allow-to-use-full-scan.patch
 Patch2:         0002-test-use-NOTMUCH_NEW-consistently.patch
+Patch3:         0003-test-use-NOTMUCH_NEW_OPTIONS-in-atomicity.py.patch
 
 BuildRequires:  make
+%if 0%{?fedora} >= 41
+BuildRequires:  bash-completion-devel
+%else
 BuildRequires:  bash-completion
+%endif
 BuildRequires:  desktop-file-utils
 BuildRequires:  emacs
 BuildRequires:  emacs-el
@@ -68,40 +53,26 @@ BuildRequires:  libtalloc-devel
 BuildRequires:  perl-interpreter
 BuildRequires:  perl-generators
 BuildRequires:  perl-podlators
-%if 0%{?with_python2}
-BuildRequires:  python2-devel
-BuildRequires:  python2-docutils
-BuildRequires:  python2-sphinx
-%endif
 BuildRequires:  ruby-devel
 %if %{with sfsexp}
 BuildRequires:  pkgconfig(sfsexp)
 %endif
 BuildRequires:  xapian-core-devel
 BuildRequires:  zlib-devel
-
-%if 0%{?with_python3}
 BuildRequires:  python3-devel
 BuildRequires:  python3-docutils
 BuildRequires:  python3-sphinx
-%endif
 
-%if 0%{?with_python3CFFI}
 BuildRequires:  python3-setuptools
-  %if %{with tests}
+%if %{with tests}
 BuildRequires:  python3-pytest
 # Not available on *EL, skip some tests there:
-    %if 0%{?fedora}
+  %if 0%{?fedora}
 BuildRequires:  python3-pytest-shutil
-    %endif
   %endif
 BuildRequires:  python3-cffi
-%endif
-
-%if %{with tests}
 # Not available on *EL, skip some tests there:
 # copr only: use mjg/dtach-epel
-# emacs 26 on EL8 is too old
   %if 0%{?fedora} || 0%{?rhel} >=9
 BuildRequires:  dtach
   %endif
@@ -147,9 +118,7 @@ Notmuch library.  You'll also need to install the notmuch package.
 Summary:    Manage notmuch tags with git
 Requires:   %{name} = %{version}-%{release}
 Requires:   git-core
-%if 0%{?with_python3CFFI}
 Recommends: python3-notmuch2
-%endif
 
 %description git
 This package contains a simple tool to save, restore, and synchronize
@@ -165,41 +134,18 @@ Requires:   emacs(bin) >= %{_emacs_version}
 %description -n emacs-notmuch
 %{summary}.
 
-%if 0%{?with_python2}
-%package -n python2-notmuch
-Summary:    Python2 bindings for notmuch
-Requires:   %{name} = %{version}-%{release}
-%{?python_provide:%python_provide python2-notmuch}
-
-Requires:       python2
-
-%description -n python2-notmuch
-%{summary}.
-%endif
-
-%if 0%{?with_python3legacy}
-%package -n python3-notmuch
-Summary:    Python3 bindings for notmuch (legacy)
-Requires:   %{name} = %{version}-%{release}
-%{?python_provide:%python_provide python3-notmuch}
-
-Requires:       python3
-
-%description -n python3-notmuch
-%{summary}.
-%endif
-
-%if 0%{?with_python3CFFI}
 %package -n python3-notmuch2
 Summary:    Python3 bindings for notmuch (cffi)
 Requires:   %{name} = %{version}-%{release}
 %{?python_provide:%python_provide python3-notmuch2}
 
-Requires:       python3
+Requires:   python3
+# Keep these as long as we need to provide an upgrade path:
+Obsoletes:  python-notmuch < 0.39~rc0^1.ge9da6780-1
+Obsoletes:  python3-notmuch < 0.39~rc0^1.ge9da6780-1
 
 %description -n python3-notmuch2
 %{summary}.
-%endif
 
 %package -n ruby-notmuch
 Summary:    Ruby bindings for notmuch
@@ -239,21 +185,9 @@ interface, utilizing the notmuch framework.
 %configure --emacslispdir=%{_emacs_sitelispdir}
 %make_build CFLAGS="$RPM_OPT_FLAGS -fPIC"
 
-# Build the python bindings
-pushd bindings/python
-    %if 0%{?with_python2}
-    %py2_build
-    %endif
-    %if 0%{?with_python3}
-    %py3_build
-    %endif
-popd
-
 # Build the python cffi bindings
 pushd bindings/python-cffi
-    %if 0%{?with_python3CFFI}
-    %py3_build
-    %endif
+%py3_build
 popd
 
 # Build notmuch-mutt
@@ -289,21 +223,9 @@ find %{buildroot}%{_libdir} -name *.so* -exec chmod 755 {} \;
 install -m0755 notmuch-git nmbug %{buildroot}%{_bindir}/
 %endif
 
-# Install the python bindings and documentation
-pushd bindings/python
-    %if 0%{?with_python2}
-    %py2_install
-    %endif
-    %if 0%{?with_python3legacy}
-    %py3_install
-    %endif
-popd
-
 # Install the python cffi bindings and documentation
 pushd bindings/python-cffi
-    %if 0%{?with_python3CFFI}
-    %py3_install
-    %endif
+%py3_install
 popd
 
 # Install the ruby bindings
@@ -412,22 +334,8 @@ vim -u NONE -esX -c "helptags ." -c quit
 %{_infodir}/notmuch-emacs-mua.info*
 %{_infodir}/notmuch-emacs.info*
 
-%if 0%{?with_python2}
-%files -n python2-notmuch
-%doc bindings/python/README
-%{python2_sitelib}/notmuch*
-%endif
-
-%if 0%{?with_python3legacy}
-%files -n python3-notmuch
-%doc bindings/python/README
-%{python3_sitelib}/notmuch*
-%endif
-
-%if 0%{?with_python3CFFI}
 %files -n python3-notmuch2
 %{python3_sitearch}/notmuch*
-%endif
 
 %files -n ruby-notmuch
 %{ruby_vendorarchdir}/*

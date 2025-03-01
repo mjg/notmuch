@@ -1,0 +1,43 @@
+From 276359077b0bb5d23de55b1929fe1d5aaffea8ea Mon Sep 17 00:00:00 2001
+Message-ID: <276359077b0bb5d23de55b1929fe1d5aaffea8ea.1722592324.git.git@grubix.eu>
+In-Reply-To: <71f2f7f0ecae56d835a29aa5a3a4da7ebf218adc.1722592324.git.git@grubix.eu>
+References: <71f2f7f0ecae56d835a29aa5a3a4da7ebf218adc.1722592324.git.git@grubix.eu>
+From: Michael J Gruber <git@grubix.eu>
+Date: Wed, 5 Jun 2024 14:56:12 +0200
+Subject: [PATCH 3/3] test: use NOTMUCH_NEW_OPTIONS in atomicity.py
+
+T380-atomicity suffers from several problems which make it difficult to
+interpret failures (e.g. actual output in test description). Try to
+solve two of them:
+- initialize the output file so that we do not get strange shell errors
+  (unless the gdb breakpoint failed to init)
+- heed NOTMUCH_NEW_OPTIONS, hoping this solves timing issues
+---
+ test/atomicity.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/test/atomicity.py b/test/atomicity.py
+index 389517e1..d4092ccb 100644
+--- a/test/atomicity.py
++++ b/test/atomicity.py
+@@ -27,6 +27,8 @@ class RenameBreakpoint(gdb.Breakpoint):
+         super(RenameBreakpoint, self).__init__(*args, **kwargs)
+         self.last_inodes = {}
+         self.n = 0
++        # Tell the shell we have started
++        open('outcount', 'w').write(str(self.n))
+ 
+     def stop(self):
+         xapiandir = '%s/.notmuch/xapian' % maildir
+@@ -58,7 +60,7 @@ class RenameBreakpoint(gdb.Breakpoint):
+         env.update(NOTMUCH_CONFIG=os.environ['NOTMUCH_CONFIG'] + '.snap',
+                    XAPIAN_FLUSH_THRESHOLD='1000')
+         subprocess.check_call(
+-            ['notmuch', 'new'], env=env, stdout=open('/dev/null', 'w'))
++            ['notmuch', 'new'] + os.environ.get('NOTMUCH_NEW_OPTIONS','').split(), env=env, stdout=open('/dev/null', 'w'))
+         subprocess.check_call(
+             ['notmuch', 'search', '*'], env=env,
+             stdout=open('search.%d' % self.n, 'w'))
+-- 
+2.46.0.282.g6b86a0aa17
+
