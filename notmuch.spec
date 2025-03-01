@@ -1,5 +1,6 @@
 ## Pull in upstream source:
 # {{{ git submodule update --init 1>&2; git submodule }}}
+# {{{ git -C source tag -f 0.39_rc1 45400904 }}}
 %global gitversion      {{{ git -C source rev-parse HEAD }}}
 %global gitshortversion {{{ git -C source rev-parse --short HEAD }}}
 %global gitdescribefedversion {{{ git -C source describe --tags --match '[0-9]*' | sed -e 's/^\(.*\)-\([0-9]*\)-g\(.*\)$/\1^\2.g\3/' -e 's/_rc/~rc/' -e 's/_pre/~pre/' }}}
