@@ -6,8 +6,8 @@
 %global gitdescribefedversion {{{ git -C source describe --tags --match '[0-9]*' | sed -e 's/^\(.*\)-\([0-9]*\)-g\(.*\)$/\1^\2.g\3/' -e 's/_rc/~rc/' -e 's/_pre/~pre/' }}}
 
 # We used to set these based on fedora/rhel versions. Keep them in case for now.
-%bcond_without tests
-%bcond_without sfsexp
+%bcond tests 1
+%bcond sfsexp 1
 
 # comparing {_emacs_version} in macros does not work well
 # so we catch the major version bumps ;)
@@ -71,9 +71,9 @@ BuildRequires:  python3-pytest
 BuildRequires:  python3-pytest-shutil
   %endif
 BuildRequires:  python3-cffi
-# Not available on *EL, skip some tests there:
+# dtach not available on *EL, skip some tests there;
 # copr only: use mjg/dtach-epel
-  %if 0%{?fedora} || 0%{?rhel} >=9
+  %if 0%{?fedora} || 0%{?copr_projectname:1}
 BuildRequires:  dtach
   %endif
 BuildRequires:  gdb
