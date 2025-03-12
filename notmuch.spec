@@ -25,7 +25,7 @@
 
 Name:           notmuch
 Version:        %{gitdescribefedversion}
-Release:        1%{?dist}
+Release:        %autorelease
 Summary:        System for indexing, searching, and tagging email
 License:        GPL-3.0-or-later
 URL:            https://notmuchmail.org/
@@ -184,8 +184,11 @@ interface, utilizing the notmuch framework.
 %prep
 %if %{with distrobuild}
 %{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
-%endif
+%autosetup -p1
+%else
+# unversioned dir for git build, no check
 %autosetup -n notmuch -p1
+%endif
 
 %build
 # DEBUG mtime/stat
@@ -361,5 +364,4 @@ vim -u NONE -esX -c "helptags ." -c quit
 %{_datadir}/vim/vimfiles/syntax/notmuch-show.vim
 
 %changelog
-* Tue Mar 29 2022 Michael J Gruber <mjg@fedoraproject.org> - 0.35^29.g04b43dc4-1
-- build from git/copr
+%autochangelog
