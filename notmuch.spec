@@ -1,3 +1,7 @@
+# Do we build in/for the distro or in copr?
+%bcond distrobuild 0
+
+# We do not conditionalise this block and the one in sources because we do not include rpkg macros in distro spec:
 ## Pull in upstream source:
 # {{{ git submodule update --init 1>&2; git submodule }}}
 # {{{ git -C source tag -f 0.39_rc1 45400904 }}}
@@ -73,7 +77,7 @@ BuildRequires:  python3-pytest-shutil
 BuildRequires:  python3-cffi
 # dtach not available on *EL, skip some tests there;
 # copr only: use mjg/dtach-epel
-  %if 0%{?fedora} || 0%{?copr_projectname:1}
+  %if 0%{?fedora} || %{without distrobuild}
 BuildRequires:  dtach
   %endif
 BuildRequires:  gdb
@@ -178,6 +182,9 @@ notmuch-vim is a Vim plugin that provides a fully usable mail client
 interface, utilizing the notmuch framework.
 
 %prep
+%if %{with distrobuild}
+%{gpgverify} --keyring='%{SOURCE2}' --signature='%{SOURCE1}' --data='%{SOURCE0}'
+%endif
 %autosetup -n notmuch -p1
 
 %build
