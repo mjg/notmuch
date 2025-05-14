@@ -1,10 +1,10 @@
-From f955490874d1ce003e2e8ecb48a54d895f104823 Mon Sep 17 00:00:00 2001
-Message-ID: <f955490874d1ce003e2e8ecb48a54d895f104823.1722592324.git.git@grubix.eu>
-In-Reply-To: <71f2f7f0ecae56d835a29aa5a3a4da7ebf218adc.1722592324.git.git@grubix.eu>
-References: <71f2f7f0ecae56d835a29aa5a3a4da7ebf218adc.1722592324.git.git@grubix.eu>
+From 9079171cd5dbd9d0a49923575c197b0aa1dab00e Mon Sep 17 00:00:00 2001
+Message-ID: <9079171cd5dbd9d0a49923575c197b0aa1dab00e.1747235464.git.git@grubix.eu>
+In-Reply-To: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
+References: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
 From: Michael J Gruber <git@grubix.eu>
 Date: Thu, 25 May 2023 13:49:01 +0200
-Subject: [PATCH 2/3] test: use NOTMUCH_NEW consistently
+Subject: [PATCH 2/7] test: use NOTMUCH_NEW consistently
 
 The test suite provides `NOTMUCH_NEW ()` primarily as a way to sanitize
 the output of `notmuch new`. As a side effect, this allows to pass
@@ -1478,5 +1478,5 @@ index 8af291b2..d87c9ee4 100644
  }
  
 -- 
-2.46.0.282.g6b86a0aa17
+2.49.0.1151.g12c739e718
 

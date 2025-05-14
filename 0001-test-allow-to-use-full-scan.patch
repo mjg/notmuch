@@ -1,8 +1,8 @@
-From 71f2f7f0ecae56d835a29aa5a3a4da7ebf218adc Mon Sep 17 00:00:00 2001
-Message-ID: <71f2f7f0ecae56d835a29aa5a3a4da7ebf218adc.1722592324.git.git@grubix.eu>
+From 49564d5c6bfcc645bc488f9a92193fdc003574af Mon Sep 17 00:00:00 2001
+Message-ID: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
 From: Michael J Gruber <git@grubix.eu>
 Date: Tue, 15 Feb 2022 17:38:02 +0100
-Subject: [PATCH 1/3] test: allow to use --full-scan
+Subject: [PATCH 1/7] test: allow to use --full-scan
 
 Some build infrastructure appears to have problems with mtime/stat,
 leading to spurious failures (noticed on s390x and aarch64 with epel8).
@@ -72,5 +72,5 @@ index 059e110c..8af291b2 100644
  
  NOTMUCH_DUMP_TAGS () {
 -- 
-2.46.0.282.g6b86a0aa17
+2.49.0.1151.g12c739e718
 

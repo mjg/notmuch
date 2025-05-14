@@ -32,9 +32,13 @@ URL:            https://notmuchmail.org/
 # rpkg's git_pack does not cope well with submodules, so we force it to assume a dirty tree.
 # The tree is unmodified (before possibly applying patches).
 Source:         {{{ GIT_DIRTY=1 git_pack path=source dir_name=notmuch }}}
-Patch1:         0001-test-allow-to-use-full-scan.patch
-Patch2:         0002-test-use-NOTMUCH_NEW-consistently.patch
-Patch3:         0003-test-use-NOTMUCH_NEW_OPTIONS-in-atomicity.py.patch
+Patch:          0001-test-allow-to-use-full-scan.patch
+Patch:          0002-test-use-NOTMUCH_NEW-consistently.patch
+Patch:          0003-test-use-NOTMUCH_NEW_OPTIONS-in-atomicity.py.patch
+Patch:          0004-test-correct-comparison-order-in-T380.patch
+Patch:          0005-test-do-not-pass-T380.1-for-the-wrong-reasons.patch
+Patch:          0006-test-reword-T380.2-to-be-clearer.patch
+Patch:          0007-test-set-up-the-outcount-for-T380.1.patch
 
 BuildRequires:  make
 %if 0%{?fedora} >= 41

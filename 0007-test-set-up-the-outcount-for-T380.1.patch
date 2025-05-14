@@ -1,0 +1,46 @@
+From 2c21154377537afcee91365ef27c206cf693a914 Mon Sep 17 00:00:00 2001
+Message-ID: <2c21154377537afcee91365ef27c206cf693a914.1747235464.git.git@grubix.eu>
+In-Reply-To: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
+References: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
+From: Michael J Gruber <git@grubix.eu>
+Date: Wed, 9 Feb 2022 11:35:31 +0100
+Subject: [PATCH 7/7] test: set up the outcount for T380.1
+
+If gdb is present but for some reason `atomicity.py` fails to write to
+the output file then the test fails with some ugly bash errors in the
+wrong places (because the outcount variable is empty).
+
+Therefore, set up the outcount with `0` to get the test script to
+run and the test to fail for a clearer reason (showing up in the diff).
+
+Background: We noticed this with arch armhfp emulated on x86_64 in
+Fedora's COPR test build environment. It comes up again and again
+whenever somnething around gdb/python goes unexpected.
+---
+ test/T380-atomicity.sh | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/test/T380-atomicity.sh b/test/T380-atomicity.sh
+index a0393cb6..85942d9f 100755
+--- a/test/T380-atomicity.sh
++++ b/test/T380-atomicity.sh
+@@ -70,9 +70,15 @@ if test_require_external_prereq gdb; then
+     notmuch search '*' 2>/dev/null > expected
+ 
+     # Check output against golden output
+-    outcount=$(cat outcount)
+     : > searchall
+     : > expectall
++    if ! test -f outcount; then
++        outcount = 0
++        echo "Test fails because atomicity.py was never run. gdb says:" > searchall
++        cat gdb.out >> searchall
++    else
++        outcount=$(cat outcount)
++    fi
+     for ((i = 0; i < $outcount; i++)); do
+ 	if ! cmp -s search.$i expected; then
+ 	    # Find the range of interruptions that match this output
+-- 
+2.49.0.1151.g12c739e718
+
