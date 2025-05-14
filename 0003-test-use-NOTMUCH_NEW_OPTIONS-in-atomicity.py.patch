@@ -1,10 +1,10 @@
-From 276359077b0bb5d23de55b1929fe1d5aaffea8ea Mon Sep 17 00:00:00 2001
-Message-ID: <276359077b0bb5d23de55b1929fe1d5aaffea8ea.1722592324.git.git@grubix.eu>
-In-Reply-To: <71f2f7f0ecae56d835a29aa5a3a4da7ebf218adc.1722592324.git.git@grubix.eu>
-References: <71f2f7f0ecae56d835a29aa5a3a4da7ebf218adc.1722592324.git.git@grubix.eu>
+From bc22d8112a1e1039b83984d9d807da602bf21902 Mon Sep 17 00:00:00 2001
+Message-ID: <bc22d8112a1e1039b83984d9d807da602bf21902.1747235464.git.git@grubix.eu>
+In-Reply-To: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
+References: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
 From: Michael J Gruber <git@grubix.eu>
 Date: Wed, 5 Jun 2024 14:56:12 +0200
-Subject: [PATCH 3/3] test: use NOTMUCH_NEW_OPTIONS in atomicity.py
+Subject: [PATCH 3/7] test: use NOTMUCH_NEW_OPTIONS in atomicity.py
 
 T380-atomicity suffers from several problems which make it difficult to
 interpret failures (e.g. actual output in test description). Try to
@@ -39,5 +39,5 @@ index 389517e1..d4092ccb 100644
              ['notmuch', 'search', '*'], env=env,
              stdout=open('search.%d' % self.n, 'w'))
 -- 
-2.46.0.282.g6b86a0aa17
+2.49.0.1151.g12c739e718
 

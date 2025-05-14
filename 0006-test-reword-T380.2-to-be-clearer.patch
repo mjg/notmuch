@@ -1,0 +1,42 @@
+From fb30d9340c22bc7f939b015c39a6de2902d75329 Mon Sep 17 00:00:00 2001
+Message-ID: <fb30d9340c22bc7f939b015c39a6de2902d75329.1747235464.git.git@grubix.eu>
+In-Reply-To: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
+References: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
+From: Michael J Gruber <git@grubix.eu>
+Date: Wed, 9 Feb 2022 11:27:20 +0100
+Subject: [PATCH 6/7] test: reword T380.2 to be clearer
+
+T380.2 gives a test description which depends on the actual test output,
+rather than the expected outcome or actual test which is performed.
+
+So, when the test fails due missing abort points, the test describes
+itself as `detected 0>10 abort points` so that it's not clear which part
+or which number is the expectation. (Also, `0>10` is no number ...)
+
+When the test is not run for some reason and fails because of that, the
+test describes itself as `detected >10 abort points`, which arguably is
+better or worse.
+
+Reword it to say `detected more than 10 abort points`, which is the
+actual expectation and what we test for. The failing test line still
+gives the actual number.
+---
+ test/T380-atomicity.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/T380-atomicity.sh b/test/T380-atomicity.sh
+index 8a9863a4..a0393cb6 100755
+--- a/test/T380-atomicity.sh
++++ b/test/T380-atomicity.sh
+@@ -99,7 +99,7 @@ fi
+ test_begin_subtest '"notmuch new" is idempotent under arbitrary aborts'
+ test_expect_equal_file expectall searchall
+ 
+-test_begin_subtest "detected $outcount>10 abort points"
++test_begin_subtest "detected more than 10 abort points"
+ test_expect_success "test $outcount -gt 10"
+ 
+ test_done
+-- 
+2.49.0.1151.g12c739e718
+

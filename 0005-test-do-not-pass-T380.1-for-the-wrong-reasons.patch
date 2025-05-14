@@ -1,0 +1,36 @@
+From 6fd78de4d3a5050e22d2478f4e9e6cb0c160ec98 Mon Sep 17 00:00:00 2001
+Message-ID: <6fd78de4d3a5050e22d2478f4e9e6cb0c160ec98.1747235464.git.git@grubix.eu>
+In-Reply-To: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
+References: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
+From: Michael J Gruber <git@grubix.eu>
+Date: Wed, 9 Feb 2022 11:21:18 +0100
+Subject: [PATCH 5/7] test: do not pass T380.1 for the wrong reasons
+
+If gdb is missing then some files are never written to so that the
+comparison of non-existing files succeeds for the wrong reason,
+claiming that `notmch new` is idempotent when it was in fact never run.
+
+Catch this and (for lack of a better spot) set up the files with a
+reason for the FAIL.
+---
+ test/T380-atomicity.sh | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/test/T380-atomicity.sh b/test/T380-atomicity.sh
+index 339a1f52..8a9863a4 100755
+--- a/test/T380-atomicity.sh
++++ b/test/T380-atomicity.sh
+@@ -90,6 +90,10 @@ if test_require_external_prereq gdb; then
+ 	    i=$(expr $end - 1)
+ 	fi
+     done
++else
++    echo -n "Test fails due to missing gdb." > searchall
++    echo -n > expectall
++    outcount=0
+ fi
+ 
+ test_begin_subtest '"notmuch new" is idempotent under arbitrary aborts'
+-- 
+2.49.0.1151.g12c739e718
+

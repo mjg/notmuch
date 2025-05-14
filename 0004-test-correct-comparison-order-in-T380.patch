@@ -1,0 +1,31 @@
+From 293282d4fddba73b360489f78bd463fbc9109a85 Mon Sep 17 00:00:00 2001
+Message-ID: <293282d4fddba73b360489f78bd463fbc9109a85.1747235464.git.git@grubix.eu>
+In-Reply-To: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
+References: <49564d5c6bfcc645bc488f9a92193fdc003574af.1747235464.git.git@grubix.eu>
+From: Michael J Gruber <git@grubix.eu>
+Date: Wed, 9 Feb 2022 11:18:45 +0100
+Subject: [PATCH 4/7] test: correct comparison order in T380
+
+Specifying test comparisons as "expected actual" gives a better readable
+diff since the "-" indicates missing, "+" additional items compared to
+the expectations.
+---
+ test/T380-atomicity.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/T380-atomicity.sh b/test/T380-atomicity.sh
+index 3aeb1d1e..339a1f52 100755
+--- a/test/T380-atomicity.sh
++++ b/test/T380-atomicity.sh
+@@ -93,7 +93,7 @@ if test_require_external_prereq gdb; then
+ fi
+ 
+ test_begin_subtest '"notmuch new" is idempotent under arbitrary aborts'
+-test_expect_equal_file searchall expectall
++test_expect_equal_file expectall searchall
+ 
+ test_begin_subtest "detected $outcount>10 abort points"
+ test_expect_success "test $outcount -gt 10"
+-- 
+2.49.0.1151.g12c739e718
+
