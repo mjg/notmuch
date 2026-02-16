@@ -166,7 +166,7 @@ Requires:	%{name} = %{version}-%{release}
 %{?python_provide:%python_provide python3-notmuch2}
 
 Requires:	python3
-# Keep these as long as we need to provide an upgrade path:
+# Keep these as long as we need to provide an upgrade path (F42 EOL):
 Obsoletes:	python-notmuch < 0.39~rc0^1.ge9da6780-1
 Obsoletes:	python3-notmuch < 0.39~rc0^1.ge9da6780-1
 
@@ -286,7 +286,7 @@ make install DESTDIR=%{buildroot} prefix="%{_datadir}/vim/vimfiles"
 popd
 %endif
 
-# Do not install notmuch-git which requires sfsexp
+# Install notmuch-git with sfsexp only
 %if %{without sfsexp}
 rm -f %{buildroot}%{_mandir}/man1/nmbug.1*
 rm -f %{buildroot}%{_mandir}/man1/notmuch-git.1*
@@ -331,8 +331,10 @@ vim -u NONE -esX -c "helptags ." -c quit
 %{_datadir}/zsh/site-functions/_notmuch
 %{_datadir}/zsh/site-functions/_email-notmuch
 %{_datadir}/bash-completion/completions/notmuch
+%{_bindir}/git-remote-notmuch
 %{_bindir}/notmuch
 %{_libdir}/libnotmuch.so.5*
+%{_mandir}/man1/git-remote-notmuch.1*
 %{_mandir}/man1/notmuch.1*
 %{_mandir}/man1/notmuch-address.1*
 %{_mandir}/man1/notmuch-compact.1*
@@ -352,6 +354,7 @@ vim -u NONE -esX -c "helptags ." -c quit
 %{_mandir}/man7/notmuch-properties.7*
 %{_mandir}/man7/notmuch-search-terms.7*
 %{_mandir}/man7/notmuch-sexp-queries.7*
+%{_infodir}/git-remote-notmuch.info*
 %{_infodir}/notmuch.info*
 %{_infodir}/notmuch-address.info*
 %{_infodir}/notmuch-compact.info*
