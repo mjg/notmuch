@@ -12,25 +12,8 @@
 # We used to set these based on fedora/rhel versions. Keep them in case for now.
 %bcond tests 1
 %bcond sfsexp 1
-
-# *el 10 missing some runtime requirements
-%if 0%{?rhel} >= 10
-%bcond mutt 0
-%bcond vim 0
-%else
 %bcond mutt 1
 %bcond vim 1
-%endif
-
-# comparing {_emacs_version} in macros does not work well
-# so we catch the major version bumps ;)
-# read "with emacs at least"
-%if 0%{?fedora} >= 37 || 0%{?rhel} >= 10
-%global with_emacs28 1
-%endif
-%if 0%{?fedora} >= 38 || 0%{?rhel} >= 10
-%global with_emacs29 1
-%endif
 
 Name:		notmuch
 Version:	%{gitdescribefedversion}
@@ -41,22 +24,13 @@ URL:		https://notmuchmail.org/
 # rpkg's git_pack does not cope well with submodules, so we force it to assume a dirty tree.
 # The tree is unmodified (before possibly applying patches).
 Source:		{{{ GIT_DIRTY=1 git_pack path=source dir_name=notmuch }}}
-Patch:		0001-test-allow-to-use-full-scan.patch
-Patch:		0002-test-use-NOTMUCH_NEW-consistently.patch
-Patch:		0003-test-use-NOTMUCH_NEW_OPTIONS-in-atomicity.py.patch
 Patch:		0004-test-correct-comparison-order-in-T380.patch
 Patch:		0005-test-do-not-pass-T380.1-for-the-wrong-reasons.patch
 Patch:		0006-test-reword-T380.2-to-be-clearer.patch
 Patch:		0007-test-set-up-the-outcount-for-T380.1.patch
 
 BuildRequires:	make
-
-%if 0%{?fedora} >= 41
 BuildRequires:	bash-completion-devel
-%else
-BuildRequires:	bash-completion
-%endif
-
 BuildRequires:	desktop-file-utils
 BuildRequires:	emacs
 BuildRequires:	emacs-el
@@ -87,18 +61,8 @@ BuildRequires:	python3-sphinx
 
 %if %{with tests}
 BuildRequires:	python3-pytest
-
-# Not available on *EL, skip some tests there:
-%if 0%{?fedora}
 BuildRequires:	python3-pytest-shutil
-%endif
-
-# dtach not available on *EL, skip some tests there;
-# copr only: use mjg/dtach-epel
-%if 0%{?fedora} || %{without distrobuild}
 BuildRequires:	dtach
-%endif
-
 BuildRequires:	gdb
 
 %if %{with sfsexp}
@@ -304,16 +268,12 @@ NOTMUCH_SKIP_TESTS="asan"
 # notmuch-git and its tests require sfsexp.
 NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS%{!?with_sfsexp: git}"
 # T460-emacs-tree.14 leads to sporadic failures with emacs 29
-NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS%{?with_emacs29: emacs-tree.14}"
-# T460-emacs-tree.23 uses outline-cycle-buffer which requires emacs 28
-NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS%{!?with_emacs28: emacs-tree.23}"
+NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS emacs-tree.14"
 # At least on koji/copr, test suite suffers from race conditions when parallelised.
-# At least some rhel builds show mtime/stat related Heisenbugs when
-# notmuch new takes shortcuts, so enforce --full-scan there.
 NOTMUCH_SKIP_TESTS="$NOTMUCH_SKIP_TESTS" \
 NOTMUCH_TEST_SERIALIZE="yesplease" \
 NOTMUCH_TEST_TIMEOUT="10m" \
-%{py3_test_envvars} make test V=1 %{?rhel:NOTMUCH_TEST_FULLSCAN=1}
+%{py3_test_envvars} make test V=1
 %endif
 
 %if %{with vim}
